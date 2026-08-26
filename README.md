@@ -1,3 +1,6 @@
+# Recall
+A smart bookmarking app that finds your saved links by meaning, not just keywords — powered by in-browser embeddings and Supabase pgvector.
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
