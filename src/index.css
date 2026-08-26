@@ -1,0 +1,21 @@
+@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
+/* @plugin "daisyui"; */
+
+@theme {
+  /* Your custom Tailwind colors */
+  --color-primary: #6976eb;
+  --color-primary-light: #adb4f3;
+  --color-primary-lighter: #d7daf3;
+
+  --color-title: #3b3d53;
+
+  --color-success: #22c55e;
+  --color-danger: #ef4444;
+
+  /* Font */
+  --font-cairo: "Cairo", sans-serif;
+
+  /* Custom shadow */
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
