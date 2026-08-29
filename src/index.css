@@ -1,21 +1,68 @@
-@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap");
-@import "tailwindcss";
-/* @plugin "daisyui"; */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&display=swap');
+@import 'tailwindcss';
 
-@theme {
-  /* Your custom Tailwind colors */
-  --color-primary: #6976eb;
-  --color-primary-light: #adb4f3;
-  --color-primary-lighter: #d7daf3;
-
-  --color-title: #3b3d53;
-
-  --color-success: #22c55e;
-  --color-danger: #ef4444;
-
-  /* Font */
-  --font-cairo: "Cairo", sans-serif;
-
-  /* Custom shadow */
-  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.08);
+:root {
+  --color-background: #F8F7F4;
+  --color-foreground: #1A1917;
+  --color-card: #FFFFFF;
+  --color-card-foreground: #1A1917;
+  --color-primary: #FF5533;
+  --color-primary-foreground: #FFFFFF;
+  --color-secondary: #0FBFA8;
+  --color-secondary-foreground: #FFFFFF;
+  --color-muted: #F0EDE7;
+  --color-muted-foreground: #78746E;
+  --color-accent: #FF5533;
+  --color-accent-foreground: #FFFFFF;
+  --color-border: #E9E5DD;
+  --color-ring: #FF5533;
 }
+
+.dark {
+  --color-background: #131211;
+  --color-foreground: #EDE9E3;
+  --color-card: #1D1C1A;
+  --color-card-foreground: #EDE9E3;
+  --color-muted: #252320;
+  --color-muted-foreground: #958F87;
+  --color-border: #2C2926;
+  --color-ring: #FF5533;
+  /* primary, secondary, accent stay the same in dark mode as in the source file */
+}
+
+@theme inline {
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-foreground);
+  --color-card: var(--color-card);
+  --color-card-foreground: var(--color-card-foreground);
+  --color-primary: var(--color-primary);
+  --color-primary-foreground: var(--color-primary-foreground);
+  --color-secondary: var(--color-secondary);
+  --color-secondary-foreground: var(--color-secondary-foreground);
+  --color-muted: var(--color-muted);
+  --color-muted-foreground: var(--color-muted-foreground);
+  --color-accent: var(--color-accent);
+  --color-accent-foreground: var(--color-accent-foreground);
+  --color-border: var(--color-border);
+  --color-ring: var(--color-ring);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Manrope", system-ui, sans-serif;
+}
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-muted-foreground); }
