@@ -6,6 +6,7 @@ import { Link } from "react-router";
 import { useState } from "react";
 
 import Button from "../ui/Button";
+import LinkButton from "../ui/LinkButton";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -42,12 +43,12 @@ export default function Navbar() {
         </nav>
 
         <div className="hidden md:flex items-center justify-center gap-2">
-          <Button className="border border-muted bg-transparent text-foreground hover:bg-muted">
-            <Link to="/login">Log in</Link>
-          </Button>
-          <Button className="bg-primary text-white hover:brightness-90">
-            <Link to="/register">Sign up Free</Link>
-          </Button>
+          <LinkButton variant="secondary" to="/login">
+            Log in
+          </LinkButton>
+          <LinkButton variant="primary" to="/register">
+            Sign up Free
+          </LinkButton>
         </div>
 
         <div className="md:hidden">
@@ -84,11 +85,11 @@ export default function Navbar() {
             </li>
           </ul>
           <div className="w-full grid grid-cols-2 items-center justify-center gap-2">
-            <Button className="border border-muted bg-transparent text-foreground hover:bg-muted">
+            <Button variant="secondary">
               <Link to="/login">Log in</Link>
             </Button>
-            <Button className="bg-primary text-white hover:brightness-90">
-              <Link to="/register">Sign up Free</Link>
+            <Button variant="primary">
+              <Link to="/register">Sign up free</Link>
             </Button>
           </div>
         </div>

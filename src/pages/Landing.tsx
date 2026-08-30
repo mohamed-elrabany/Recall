@@ -1,11 +1,17 @@
+import Hero from "../components/landing/Hero";
+import SearchMockup from "../components/landing/SearchMockup";
+import HowItWorks from "../components/landing/HowItWorks";
+import Features from "../components/landing/Features";
+import CTA from "../components/landing/CTA";
+
 export default function Landing() {
   return (
-    <main className="font-cairo">
-      <section className="bg-primary-lighter p-6">
-        <h1 className="text-title text-3xl font-bold text-center">
-          Page under construction
-        </h1>
-      </section>
+    <main>
+        <Hero />
+        <SearchMockup />
+        <HowItWorks />
+        <Features />
+        <CTA />
     </main>
   );
 }
