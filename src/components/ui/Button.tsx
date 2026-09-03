@@ -26,7 +26,7 @@ export default function Button({
         flex items-center justify-center
         rounded-lg px-4 py-2 gap-2
         text-sm font-semibold
-        cursor
+        cursor-pointer
         transition-all duration-150
         ${variants[variant]}
         ${className}

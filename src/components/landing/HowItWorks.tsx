@@ -34,7 +34,7 @@ const cardsData: HowItWorksProps[] = [
 const HowItWorksCard = ({ icon: Icon, title, description, step }: HowItWorksProps) => {
     return(
         <div className="flex flex-col items-start justify-center gap-2 p-6 md:p-8 rounded-xl border border-border/60 bg-background shadow-lg">
-            <div className="w-full flex items-start justify-between gap-2 px-3 py-1.5 rounded-full mx-auto">
+            <div className="w-full flex items-start justify-between gap-2">
                 <div className="flex items-center justify-center bg-primary/10 p-3 rounded-lg">
                     <Icon className="w-8 h-8 text-primary" />
                 </div>
