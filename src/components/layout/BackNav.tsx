@@ -2,11 +2,17 @@ import { IoIosArrowRoundBack } from "react-icons/io";
 import { FaBookmark } from "react-icons/fa6";
 import { useNavigate } from "react-router";
 
+import Logo from "../ui/Logo";
+
 export default function BackNav() {
   const navigate = useNavigate();
 
-  function handleNavigation() {
-    navigate(-1);
+  function handleNavigation(){
+    if(navigate.length > 0){
+      navigate(-1);
+    }else{
+      navigate("/");
+    }
   }
 
   return (
@@ -19,15 +25,7 @@ export default function BackNav() {
         <span>Back</span>
       </button>
 
-      <div className="flex items-center gap-2">
-        <div className="flex items-center justify-center bg-primary rounded-lg p-2">
-          <FaBookmark className="w-4 h-4 text-white" />
-        </div>
-
-        <span className="text-foreground font-bold text-xl">
-          Recall
-        </span>
-      </div>
+      <Logo />
     </header>
   );
 }

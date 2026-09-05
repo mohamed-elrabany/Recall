@@ -7,6 +7,7 @@ import { useState } from "react";
 
 import Button from "../ui/Button";
 import LinkButton from "../ui/LinkButton";
+import Logo from "../ui/Logo";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -14,12 +15,7 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-background/90 border-b border-border/60 backdrop-blur-md">
       <div className="flex items-center justify-between gap-4 p-2">
-        <div className="flex items-center justify-center bg-primary-lighter p-2 gap-2 w-auto">
-          <div className="flex items-center justify-center bg-primary rounded-lg p-2 ">
-            <FaBookmark className="w-4 h-4 text-white" />
-          </div>
-          <p className="text-lighter-primary font-bold text-xl">Recall</p>
-        </div>
+        <Logo />
 
         <nav>
           <ul className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground">

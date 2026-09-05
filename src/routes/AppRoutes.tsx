@@ -6,11 +6,16 @@ import {
 
 import RootLayout from "./RootLayout";
 import PublicRoutes from "./PublicRoutes";
+import ProtectedRoutes from "./ProtectedRoutes";
 
 // Lazy-loaded pages
 const LandingPage = lazy(() => import("../pages/Landing"));
 const LoginPage = lazy(() => import("../pages/Login"));
 const RegisterPage = lazy(() => import("../pages/Register"));
+const DashboardPage = lazy(() => import("../pages/Dashboard"));
+const FavoritesPage = lazy(() => import("../pages/Favorites"));
+const TagsPage = lazy(() => import("../pages/Tags"));
+const SettingsPage = lazy(() => import("../pages/Settings"));
 
 const lazyLoad = (Component: React.ComponentType) => (
   <Suspense fallback={<div>Loading...</div>}>
@@ -43,6 +48,25 @@ const router = createBrowserRouter([
   },
   {
     //protected routes can be added here in the future
+    element: <ProtectedRoutes />,
+    children:[
+      {
+        path: "/dashboard",
+        element: lazyLoad(DashboardPage),
+      },
+      {
+        path: "/favorites",
+        element: lazyLoad(FavoritesPage),
+      },
+      {
+        path: "/tags",
+        element: lazyLoad(TagsPage),
+      },
+      {
+        path: "/settings",
+        element: lazyLoad(SettingsPage),
+      }
+    ]
   }
 ]);
 
