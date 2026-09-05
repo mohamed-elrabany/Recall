@@ -1,4 +1,4 @@
-import { Outlet, useLocation, useNavigate } from "react-router";
+import { Outlet, useLocation } from "react-router";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import BackNav from "../components/layout/BackNav";

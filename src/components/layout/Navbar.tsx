@@ -1,4 +1,3 @@
-import { FaBookmark } from "react-icons/fa6";
 import { IoClose } from "react-icons/io5";
 import { RxHamburgerMenu } from "react-icons/rx";
 

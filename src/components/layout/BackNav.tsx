@@ -1,5 +1,4 @@
 import { IoIosArrowRoundBack } from "react-icons/io";
-import { FaBookmark } from "react-icons/fa6";
 import { useNavigate } from "react-router";
 
 import Logo from "../ui/Logo";
