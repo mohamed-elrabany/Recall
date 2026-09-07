@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 
 import Logo from "../ui/Logo";
 
-export default function BackNav({ title= null }: { title: string | null }) {
+export default function BackNav({ title= null }: { title?: string | null }) {
   const navigate = useNavigate();
 
   function handleNavigation(){
@@ -24,9 +24,14 @@ export default function BackNav({ title= null }: { title: string | null }) {
         <span>Back</span>
       </button>
 
-      <h4
-      style={{ fontFamily: "Manrope, sans-serif" }}
-       className="text-lg font-semibold text-foreground">{title}</h4>
+      {title && (
+        <h4
+          style={{ fontFamily: "Manrope, sans-serif" }}
+          className="text-lg font-semibold text-foreground"
+        >
+          {title}
+        </h4>
+      )}
 
       <Logo />
     </header>
