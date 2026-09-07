@@ -12,7 +12,7 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 bg-background/90 border-b border-border/60 backdrop-blur-md">
+    <header className="sticky top-0 z-50 bg-background/70 border-b border-border/60 backdrop-blur-md">
       <div className="flex items-center justify-between gap-4 p-2">
         <Logo />
 

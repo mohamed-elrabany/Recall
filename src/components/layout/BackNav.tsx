@@ -15,7 +15,7 @@ export default function BackNav({ title= null }: { title?: string | null }) {
   }
 
   return (
-    <header className="flex items-center justify-between px-4 py-3 flex-shrink-0 bg-background/90 border-b border-border/60 backdrop-blur-md">
+    <header className="sticky top-0 z-50 flex items-center justify-between bg-background/70 backdrop-blur-md border-b border-border px-4 sm:px-6 py-3">
       <button
         onClick={handleNavigation}
         className="flex items-center justify-center p-2 text-muted-foreground hover:text-foreground transition-colors duration-200 cursor-pointer"
