@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 
 import Logo from "../ui/Logo";
 
-export default function BackNav() {
+export default function BackNav({ title= null }: { title: string | null }) {
   const navigate = useNavigate();
 
   function handleNavigation(){
@@ -23,6 +23,10 @@ export default function BackNav() {
         <IoIosArrowRoundBack className="mr-2 w-6 h-6" />
         <span>Back</span>
       </button>
+
+      <h4
+      style={{ fontFamily: "Manrope, sans-serif" }}
+       className="text-lg font-semibold text-foreground">{title}</h4>
 
       <Logo />
     </header>

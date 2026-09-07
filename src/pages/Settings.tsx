@@ -1,7 +1,22 @@
+import { useState } from "react";
+
+import Appearance from "../components/settings/Apperance";
+import Account from "../components/settings/Account";
+import Data from "../components/settings/Data";
+import DangerZone from "../components/settings/DangerZone";
+
+import type { LayoutMode, ThemeMode } from "../types/settings";
+
 export default function Settings() {
+    const [user, setUser] = useState<any | null>(null);
+    const [layout, setLayout] = useState<LayoutMode>("grid");
+    const [theme, setTheme] = useState<ThemeMode>("system");
     return(
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-[#F8F9FF] via-[#FAFAFF] to-[#F0F2FF] dark:from-[#0A0E27] dark:via-[#161A41] dark:to-[#1F1A5F]">
-            <h1>Settings</h1>
+        <div className="max-w-xl mx-auto px-4 sm:px-6 py-8">
+            <Account user={user} />
+            <Appearance layout={layout} theme={theme} changeLayout={setLayout} toggleTheme={setTheme} />
+            <Data />
+            <DangerZone />
         </div>
     );
 }

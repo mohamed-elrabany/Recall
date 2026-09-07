@@ -1,13 +1,16 @@
 import { Navigate, Outlet, useLocation } from "react-router";
 import { useEffect } from "react";
 
+import Topbar from "../components/layout/Topbar";
 import Sidebar from "../components/layout/Sidebar";
 import BottomNav from "../components/layout/BottomNav";
+import BackNav from "../components/layout/BackNav";
 
 export default function ProtectedRoutes() {
   const isAuthenticated: boolean = true; // Replace with your authentication logic
 
   const location = useLocation();
+  const isSettingsPage = location.pathname === "/settings";
 
   if (!isAuthenticated) {
     return <Navigate to={"/login"} state={{ from: location }} replace />;
@@ -19,6 +22,7 @@ export default function ProtectedRoutes() {
     <div className="flex min-h-screen bg-gradient-to-b from-[#F8F9FF] via-[#FAFAFF] to-[#F0F2FF] dark:from-[#0A0E27] dark:via-[#161A41] dark:to-[#1F1A5F]">
       <Sidebar />
       <main className="flex-1 pb-20 md:pb-0">
+        {isSettingsPage ? <BackNav title="Settings" /> : <Topbar />}
         <Outlet />
       </main>
       <BottomNav />
