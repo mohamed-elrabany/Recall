@@ -19,7 +19,7 @@ export default function ProtectedRoutes() {
     window.scrollTo(0, 0);
   }, [location.pathname]);
   return (
-    <div className="flex min-h-screen bg-gradient-to-b from-[#F8F9FF] via-[#FAFAFF] to-[#F0F2FF] dark:from-[#0A0E27] dark:via-[#161A41] dark:to-[#1F1A5F]">
+    <div className="flex min-h-screen bg-background">
       <Sidebar />
       <main className="flex-1 pb-20 md:pb-0">
         {isSettingsPage ? <BackNav title="Settings" /> : <Topbar />}
