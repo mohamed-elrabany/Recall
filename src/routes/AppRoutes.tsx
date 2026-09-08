@@ -1,8 +1,5 @@
 import { Suspense, lazy } from "react";
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router";
+import { createBrowserRouter, RouterProvider } from "react-router";
 
 import RootLayout from "./RootLayout";
 import PublicRoutes from "./PublicRoutes";
@@ -16,6 +13,9 @@ const DashboardPage = lazy(() => import("../pages/Dashboard"));
 const FavoritesPage = lazy(() => import("../pages/Favorites"));
 const TagsPage = lazy(() => import("../pages/Tags"));
 const SettingsPage = lazy(() => import("../pages/Settings"));
+const AddBookmarkPage = lazy(() => import("../pages/AddBookmark"));
+const BookmarkDetailsPage = lazy(() => import("../pages/BookmarkDetails"));
+const EditBookmarkPage = lazy(() => import("../pages/EditBookmark"));
 
 const lazyLoad = (Component: React.ComponentType) => (
   <Suspense fallback={<div>Loading...</div>}>
@@ -25,49 +25,35 @@ const lazyLoad = (Component: React.ComponentType) => (
 
 const router = createBrowserRouter([
   {
-    element: <PublicRoutes />,
+    element: <PublicRoutes />, // auth guard: kick out logged-in users
     children: [
       {
-        element: <RootLayout />,
+        element: <RootLayout />, // visual shell: navbar/footer or backnav
         children: [
-          {
-            index: true,
-            element: lazyLoad(LandingPage),
-          },
-          {
-            path: "/login",
-            element: lazyLoad(LoginPage),
-          },
-          {
-            path: "/register",
-            element: lazyLoad(RegisterPage),
-          },
+          { index: true, element: lazyLoad(LandingPage) },
+          { path: "login", element: lazyLoad(LoginPage) },
+          { path: "register", element: lazyLoad(RegisterPage) },
         ],
       },
     ],
   },
   {
-    //protected routes can be added here in the future
     element: <ProtectedRoutes />,
-    children:[
+    children: [
+      { path: "dashboard", element: lazyLoad(DashboardPage) },
+      { path: "favorites", element: lazyLoad(FavoritesPage) },
+      { path: "tags", element: lazyLoad(TagsPage) },
+      { path: "settings", element: lazyLoad(SettingsPage) },
       {
-        path: "/dashboard",
-        element: lazyLoad(DashboardPage),
+        path: "bookmarks",
+        children: [
+          { path: "add", element: lazyLoad(AddBookmarkPage) },
+          { path: "edit/:id", element: lazyLoad(EditBookmarkPage) },
+          { path: ":id", element: lazyLoad(BookmarkDetailsPage) }
+        ],
       },
-      {
-        path: "/favorites",
-        element: lazyLoad(FavoritesPage),
-      },
-      {
-        path: "/tags",
-        element: lazyLoad(TagsPage),
-      },
-      {
-        path: "/settings",
-        element: lazyLoad(SettingsPage),
-      }
-    ]
-  }
+    ],
+  },
 ]);
 
 export default function AppRoutes() {

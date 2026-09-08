@@ -1,9 +1,12 @@
-import { Outlet } from "react-router";
+// PublicRoutes.tsx
+import { Navigate, Outlet } from "react-router";
 
 export default function PublicRoutes() {
-  return (
-    <>
-      <Outlet />
-    </>
-  );
+  const isAuthenticated: boolean = false; // Replace with your auth logic
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <Outlet />;
 }

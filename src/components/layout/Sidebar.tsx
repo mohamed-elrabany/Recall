@@ -1,4 +1,4 @@
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import { navItems } from "../../utils/navItems";
 
 import { MdAdd } from "react-icons/md";
@@ -8,6 +8,7 @@ import Logo from "../ui/Logo";
 import Button from "../ui/Button";
 
 export default function Sidebar() {
+  const navigate = useNavigate();
 
   return (
     <aside className="hidden md:flex sticky top-0 h-screen overflow-y-auto w-64 bg-card p-4 flex-col justify-between items-start gap-6 border-r border-border">
@@ -17,6 +18,7 @@ export default function Sidebar() {
           aria-label="Add new link"
           className="w-full flex items-center justify-center gap-2"
           variant="primary"
+          onClick={() => navigate("/add-bookmark")}
         >
           <MdAdd className="w-5 h-5" />
           Save new

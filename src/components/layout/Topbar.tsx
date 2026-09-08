@@ -29,7 +29,7 @@ export default function Topbar() {
       {/* Search Bar  */}
       <div className="flex-1">
         <div
-          className={`flex justify-between items-center w-full px-4 py-2 
+          className={`flex justify-between items-center w-full max-w-xl px-4 py-2 
             border-2 border-border bg-card
             ${inputFocused ? "border-primary ring-3 ring-primary/10" : ""} 
             rounded-full gap-3
