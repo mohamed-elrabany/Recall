@@ -4,7 +4,7 @@ import HowItWorks from "../components/landing/HowItWorks";
 import Features from "../components/landing/Features";
 import CTA from "../components/landing/CTA";
 
-export default function Landing() {
+export function Component() {
   return (
     <main>
         <Hero />

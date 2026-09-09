@@ -1,32 +1,22 @@
-import { Outlet, useLocation } from "react-router";
+import { Outlet, useMatches } from "react-router";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import BackNav from "../components/layout/BackNav";
 
-
 export default function RootLayout() {
-  const location = useLocation();
-  const isLandingPage: boolean = location.pathname === "/";
+  const matches = useMatches();
+  const current = matches[matches.length - 1];
+  const handle = current?.handle as { chrome?: "landing" | "auth" } | undefined;
 
+  const isLanding = handle?.chrome === "landing";
 
   return (
-    <>
-      {isLandingPage ? (
-        <div className="flex flex-col min-h-screen">
-          <Navbar />
-          <div className="flex-grow">
-            <Outlet />
-          </div>
-          <Footer />
-        </div>
-      ) : (
-        <div className="flex flex-col min-h-screen">
-          <BackNav />
-          <div className="flex-grow">
-            <Outlet />
-          </div>
-        </div>
-      )}
-    </>
+    <div className="flex flex-col min-h-screen">
+      {isLanding ? <Navbar /> : <BackNav />}
+      <div className="flex-grow">
+        <Outlet />
+      </div>
+      {isLanding && <Footer />}
+    </div>
   );
 }

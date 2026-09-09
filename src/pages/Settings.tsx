@@ -7,7 +7,7 @@ import DangerZone from "../components/settings/DangerZone";
 
 import type { LayoutMode, ThemeMode } from "../types/settings";
 
-export default function Settings() {
+export function Component() {
     const [user, setUser] = useState<any | null>(null);
     const [layout, setLayout] = useState<LayoutMode>("grid");
     const [theme, setTheme] = useState<ThemeMode>("system");

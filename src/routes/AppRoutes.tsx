@@ -1,38 +1,19 @@
-import { Suspense, lazy } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router";
 
 import RootLayout from "./RootLayout";
 import PublicRoutes from "./PublicRoutes";
 import ProtectedRoutes from "./ProtectedRoutes";
 
-// Lazy-loaded pages
-const LandingPage = lazy(() => import("../pages/Landing"));
-const LoginPage = lazy(() => import("../pages/Login"));
-const RegisterPage = lazy(() => import("../pages/Register"));
-const DashboardPage = lazy(() => import("../pages/Dashboard"));
-const FavoritesPage = lazy(() => import("../pages/Favorites"));
-const TagsPage = lazy(() => import("../pages/Tags"));
-const SettingsPage = lazy(() => import("../pages/Settings"));
-const AddBookmarkPage = lazy(() => import("../pages/AddBookmark"));
-const BookmarkDetailsPage = lazy(() => import("../pages/BookmarkDetails"));
-const EditBookmarkPage = lazy(() => import("../pages/EditBookmark"));
-
-const lazyLoad = (Component: React.ComponentType) => (
-  <Suspense fallback={<div>Loading...</div>}>
-    <Component />
-  </Suspense>
-);
-
 const router = createBrowserRouter([
   {
-    element: <PublicRoutes />, // auth guard: kick out logged-in users
+    element: <PublicRoutes />,
     children: [
       {
-        element: <RootLayout />, // visual shell: navbar/footer or backnav
+        element: <RootLayout />,
         children: [
-          { index: true, element: lazyLoad(LandingPage) },
-          { path: "login", element: lazyLoad(LoginPage) },
-          { path: "register", element: lazyLoad(RegisterPage) },
+          { index: true, lazy: () => import("../pages/Landing"), handle: { chrome: "landing" } },
+          { path: "login", lazy: () => import("../pages/Login"), handle: { chrome: "auth" } },
+          { path: "register", lazy: () => import("../pages/Register"), handle: { chrome: "auth" } },
         ],
       },
     ],
@@ -40,16 +21,16 @@ const router = createBrowserRouter([
   {
     element: <ProtectedRoutes />,
     children: [
-      { path: "dashboard", element: lazyLoad(DashboardPage) },
-      { path: "favorites", element: lazyLoad(FavoritesPage) },
-      { path: "tags", element: lazyLoad(TagsPage) },
-      { path: "settings", element: lazyLoad(SettingsPage) },
+      { path: "dashboard", lazy: () => import("../pages/Dashboard"), handle: { topbar: "default" } },
+      { path: "favorites", lazy: () => import("../pages/Favorites"), handle: { topbar: "default" } },
+      { path: "tags", lazy: () => import("../pages/Tags"), handle: { topbar: "default" } },
+      { path: "settings", lazy: () => import("../pages/Settings"), handle: { topbar: "back", title: "Settings" } },
       {
         path: "bookmarks",
         children: [
-          { path: "add", element: lazyLoad(AddBookmarkPage) },
-          { path: "edit/:id", element: lazyLoad(EditBookmarkPage) },
-          { path: ":id", element: lazyLoad(BookmarkDetailsPage) }
+          { path: "add", lazy: () => import("../pages/AddBookmark"), handle: { topbar: "none" } },
+          { path: "edit/:id", lazy: () => import("../pages/EditBookmark"), handle: { topbar: "none" } },
+          { path: ":id", lazy: () => import("../pages/BookmarkDetails"), handle: { topbar: "back", title: "Bookmark Details" } },
         ],
       },
     ],

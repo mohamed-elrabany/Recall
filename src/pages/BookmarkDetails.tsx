@@ -1,4 +1,4 @@
-export default function BookmarkDetails() {
+export function Component() {
   return (
     <div className="px-4 sm:px-6 pt-6 min-h-screen">
       <h2 className="text-2xl font-bold text-foreground">Bookmark Details</h2>

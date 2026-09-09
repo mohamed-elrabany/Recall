@@ -1,20 +1,27 @@
-import { NavLink } from "react-router";
+import { NavLink, useNavigate, useLocation } from "react-router";
 import { navItems, type NavItem } from "../../utils/navItems";
 
 import { MdAdd } from "react-icons/md";
 
 export default function BottomNav() {
+  const navigate = useNavigate();
+  const location = useLocation();
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 w-full bg-card border-t border-border">
       <ul className="relative grid grid-cols-5 gap-2 items-center justify-around w-full bg-card p-2 border-t border-border">
         {navItems.slice(0, 2).map((item) => renderNavItem(item))}
         <li className="w-full h-full flex justify-center">
           <button
+            onClick={() =>
+              navigate("bookmarks/add", {
+                state: { backgroundLocation: location },
+              })
+            }
             type="button"
             aria-label="Add new link"
             className="
       flex items-center justify-center
-     w-full
+      w-full
       rounded-lg
       bg-primary text-white
       shadow-lg

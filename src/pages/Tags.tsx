@@ -9,7 +9,7 @@ const tags = [
   { label: "machine learning", count: 2 },
 ];
 
-export default function Tags() {
+export function Component() {
   return (
     <div className="px-4 sm:px-6 pt-6 min-h-screen space-y-8">
       <div className="flex flex-col items-start justify-y-start gap-4">

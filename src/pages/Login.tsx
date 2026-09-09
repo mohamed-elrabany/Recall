@@ -4,7 +4,7 @@ import Button from "../components/ui/Button";
 import { Link } from "react-router";
 import { useState } from "react";
 
-export default function Login() {
+export function Component() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
   return (
