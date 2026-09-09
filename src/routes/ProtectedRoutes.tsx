@@ -20,6 +20,12 @@ export default function ProtectedRoutes() {
   const backgroundLocation = (location.state as { backgroundLocation?: Location })
     ?.backgroundLocation;
 
+    if(backgroundLocation) {
+      document.body.style.overflow = 'hidden';
+    }else{
+      document.body.style.overflow = 'auto';
+    }
+
   const matches = useMatches();
   const current = matches[matches.length - 1];
   const handle = current.handle as { topbar?: "default" | "back" | "none"; title?: string };

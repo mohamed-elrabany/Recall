@@ -3,10 +3,13 @@ import { HiOutlineExternalLink } from "react-icons/hi";
 import { MdFavorite, MdOutlineCalendarToday } from "react-icons/md";
 
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router";
 
 export default function Bookmark({ bookmark }: { bookmark: BookMark }) {
+  const navigate = useNavigate();
   return (
     <motion.div
+    onClick={() => navigate(`/bookmarks/${bookmark?.id}`)}
       whileHover={{ y: -2 }}
       transition={{
         type: "spring",
