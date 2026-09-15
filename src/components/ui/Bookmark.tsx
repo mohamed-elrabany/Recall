@@ -9,7 +9,7 @@ export default function Bookmark({ bookmark }: { bookmark: BookMark }) {
   const navigate = useNavigate();
   return (
     <motion.div
-    onClick={() => navigate(`/bookmarks/${bookmark?.id}`)}
+      onClick={() => navigate(`/bookmarks/${bookmark?.id}`)}
       whileHover={{ y: -2 }}
       transition={{
         type: "spring",
@@ -25,7 +25,7 @@ export default function Bookmark({ bookmark }: { bookmark: BookMark }) {
           <span className="text-xs bg-muted p-2 rounded-lg w-10 h-10 flex items-center justify-center shrink-0">
             <img
               className="w-full h-full object-cover"
-              src={bookmark?.snippet}
+              src={bookmark?.icon}
               alt="snippet icon"
             />
           </span>
@@ -43,12 +43,12 @@ export default function Bookmark({ bookmark }: { bookmark: BookMark }) {
           </div>
         </div>
 
-        {bookmark?.isFavorite && (
+        {bookmark?.is_favorite && (
           <MdFavorite className="text-primary w-4 h-4 shrink-0" />
         )}
       </div>
       <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3 mb-3">
-        {bookmark?.description}
+        {bookmark?.snippet || "No description available."}
       </p>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1 flex-wrap">
@@ -63,11 +63,12 @@ export default function Bookmark({ bookmark }: { bookmark: BookMark }) {
         </div>
         <div className="text-[10px] text-muted-foreground/60 flex items-center gap-1">
           <MdOutlineCalendarToday className="w-3 h-3" />
-          {bookmark?.createdAt?.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          })}
+          {bookmark?.created_at &&
+            new Date(bookmark.created_at).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            })}
         </div>
       </div>
     </motion.div>

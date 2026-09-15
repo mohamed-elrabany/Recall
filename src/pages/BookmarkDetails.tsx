@@ -40,7 +40,8 @@ export function Component() {
 
                 <span>
                   Saved on{" "}
-                  {bookmark.createdAt?.toLocaleDateString("en-US", {
+                  {bookmark?.created_at &&
+                  new Date(bookmark.created_at).toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "short",
                     day: "numeric",
@@ -50,7 +51,7 @@ export function Component() {
             </div>
 
             <p className="font-bold text-foreground text-xl">
-              {bookmark.title}
+              {bookmark?.title}
             </p>
           </div>
         </div>
@@ -78,7 +79,7 @@ export function Component() {
         </h2>
 
         <p className="text-base text-foreground leading-relaxed">
-          {bookmark.description}
+          {bookmark?.snippet || "No summary available for this bookmark."}
         </p>
       </div>
 
