@@ -4,6 +4,7 @@ import RootLayout from "./RootLayout";
 import PublicRoutes from "./PublicRoutes";
 import ProtectedRoutes from "./ProtectedRoutes";
 
+
 const router = createBrowserRouter([
   {
     element: <PublicRoutes />,
@@ -14,6 +15,7 @@ const router = createBrowserRouter([
           { index: true, lazy: () => import("../pages/Landing"), handle: { chrome: "landing" } },
           { path: "login", lazy: () => import("../pages/Login"), handle: { chrome: "auth" } },
           { path: "register", lazy: () => import("../pages/Register"), handle: { chrome: "auth" } },
+          { path: "verify-email", lazy: () => import("../pages/VerifyEmail"), handle: { chrome: "auth" } },
         ],
       },
     ],

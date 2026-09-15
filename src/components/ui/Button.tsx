@@ -26,7 +26,6 @@ export default function Button({
         rounded-lg
         px-4 py-2
         text-sm font-semibold
-        cursor-pointer
         transition-all duration-150
         ${variants[variant]}
         ${className}
