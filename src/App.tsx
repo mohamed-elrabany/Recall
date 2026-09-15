@@ -1,9 +1,13 @@
-// import { supabase } from "./lib/supabaseClient";
 import "./App.css";
 
 import AppRoutes from "./routes/AppRoutes";
 
+import { useAuth } from "./hooks/useAuth";
+
+
 function App() {
+  useAuth();
+
   return <AppRoutes />;
 }
 

@@ -1,8 +1,14 @@
 // PublicRoutes.tsx
 import { Navigate, Outlet } from "react-router";
+import { useAppSelector } from "../store/hooks";
 
 export default function PublicRoutes() {
-  const isAuthenticated: boolean = false; // Replace with your auth logic
+
+  const { isLoading, isAuthenticated } = useAppSelector((state) => state.auth);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
