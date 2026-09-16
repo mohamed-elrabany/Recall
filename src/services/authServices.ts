@@ -28,20 +28,22 @@ export async function register({
   firstName: string;
   lastName: string;
 }) {
-  const username: string = `${firstName} ${lastName}`;
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: {
-        username,
-      },
       emailRedirectTo: `${window.location.origin}/dashboard`,
+      data: {
+        full_name: `${firstName} ${lastName}`,
+      },
     },
   });
+
   if (error) {
+    console.error("Error signing up:", error);
     throw error;
   }
+
   return data;
 }
 

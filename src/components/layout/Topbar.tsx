@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router";
+import { useLayout } from "../../hooks/useLayout";
 
 import { FaBookmark } from "react-icons/fa6";
 import { IoSearch, IoSparkles } from "react-icons/io5";
@@ -12,7 +13,8 @@ export default function Topbar() {
 
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [inputFocused, setInputFocused] = useState<boolean>(false);
-  const [layout, setLayout] = useState<LayoutMode>("grid");
+  const { layout, changeLayout } = useLayout();
+
 
     useEffect(()=>{
         setSearchQuery("");
@@ -66,7 +68,7 @@ export default function Topbar() {
               {(["grid", "list"] as LayoutMode[]).map((l) => (
                 <button
                   key={l}
-                  onClick={() => setLayout(l)}
+                  onClick={() => changeLayout(l)}
                   className={`p-1.5 rounded-md transition-colors cursor-pointer ${layout === l ? "bg-card text-foreground shadow-card" : "text-muted-foreground hover:text-foreground"}`}
                 >
                   {l === "grid" ? <MdGridOn className="w-4 h-4" /> : <MdList className="w-4 h-4" />}
