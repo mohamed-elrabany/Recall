@@ -17,7 +17,7 @@ export default function Appearance({ layout, theme, changeLayout, toggleTheme }:
   return (
     <Section title="Appearance">
       <Row label="Theme" description="Choose your preferred theme">
-        <div className="hidden sm:flex items-center gap-0.5 bg-muted rounded-lg p-0.5">
+        <div className="flex items-center gap-0.5 bg-muted rounded-lg p-0.5">
           {(["light", "system", "dark"] as ThemeMode[]).map((t) => (
             <button
               key={t}
@@ -31,7 +31,7 @@ export default function Appearance({ layout, theme, changeLayout, toggleTheme }:
               ) : (
                 <LuMonitor className="w-4 h-4" />
               )}
-              <p className="text-xs first-letter:uppercase font-semibold">
+              <p className="hidden md:block text-xs first-letter:uppercase font-semibold">
                 {t}
               </p>
             </button>
@@ -39,7 +39,7 @@ export default function Appearance({ layout, theme, changeLayout, toggleTheme }:
         </div>
       </Row>
       <Row label="Card layout" description="Default view for your saves">
-        <div className="hidden sm:flex items-center gap-0.5 bg-muted rounded-lg p-0.5">
+        <div className="flex items-center gap-0.5 bg-muted rounded-lg p-0.5">
           {(["grid", "list"] as LayoutMode[]).map((l) => (
             <button
               key={l}
@@ -51,7 +51,7 @@ export default function Appearance({ layout, theme, changeLayout, toggleTheme }:
               ) : (
                 <MdList className="w-4 h-4" />
               )}
-              <p className="text-xs first-letter:uppercase font-semibold">
+              <p className="hidden md:block text-xs first-letter:uppercase font-semibold">
                 {l}
               </p>
             </button>
