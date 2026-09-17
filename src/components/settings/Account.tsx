@@ -1,17 +1,30 @@
 import Section from "../ui/Section";
 import Row from "../ui/Row";
 import type { Profile } from "../../types/profile";
+import { useState, useRef } from "react";
+import { getInitials } from "../../utils/nameInitials";
 
 import { IoIosArrowForward } from "react-icons/io";
-import { MdOutlineCameraAlt } from "react-icons/md";
+import { MdOutlineCameraAlt, MdDeleteOutline } from "react-icons/md";
 
-export default function Account({ user = null }: { user: Profile | null }) {
-  const initials =
-    user?.full_name
-      ?.split(" ")
-      .slice(0, 2)
-      .map((name) => name.charAt(0).toUpperCase())
-      .join("") || "N/A";
+export default function Account({ user = null, setOpenModal, setAvatarUrl }: { user: Profile | null; setOpenModal: (open: boolean) => void; setAvatarUrl: (url: string) => void }) {
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const [openAvatarOptions, setOpenAvatarOptions] = useState<boolean>(false);
+  const initials = getInitials(user?.full_name);
+
+      function handleButtonClick() {
+        if (imageInputRef.current) {
+          imageInputRef.current.click();
+        }
+      }
+
+      function handleImageChange(event: React.ChangeEvent<HTMLInputElement>) {
+        const file = event.target.files?.[0];
+        const imageURL = file ? URL.createObjectURL(file) : "";
+        setAvatarUrl(imageURL);
+        setOpenAvatarOptions(false);
+        setOpenModal(true);
+      }
 
 
   return (
@@ -23,19 +36,83 @@ export default function Account({ user = null }: { user: Profile | null }) {
             <img
               src={user.avatar_url}
               alt="Avatar"
-              className="w-16 h-16 rounded-2xl"
+              className="w-16 h-16 rounded-full object-cover"
             />
           ) : (
             <div
-              className="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center text-2xl font-extrabold text-primary"
+              className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center text-2xl font-extrabold text-primary"
               style={{ fontFamily: "Manrope, sans-serif" }}
             >
               {initials}
             </div>
           )}
-          <button className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-            <MdOutlineCameraAlt size={11} className="text-white" />
+
+          {/* Camera button */}
+          <button
+            type="button"
+            onClick={() => setOpenAvatarOptions(!openAvatarOptions)}
+            className="
+      absolute -bottom-1 -right-1
+      flex h-7 w-7 items-center justify-center
+      rounded-full
+      bg-primary
+      text-white
+      shadow-md
+      ring-2 ring-card
+      transition-transform duration-150
+      hover:scale-105
+    "
+          >
+            <MdOutlineCameraAlt className="h-4 w-4" />
           </button>
+
+          {/* Avatar options */}
+          {openAvatarOptions && (
+            <div
+              className="
+        absolute top-full z-20 mt-3
+        w-40 
+        overflow-hidden
+        rounded-xl
+        border border-border
+        bg-card
+        p-1
+        shadow-xl
+      "
+            >
+              <button
+              onClick={handleButtonClick}
+                type="button"
+                className="
+          flex w-full items-center gap-3
+          rounded-lg px-3 py-2.5
+          text-sm text-foreground
+          transition-colors duration-150
+          hover:bg-primary/10
+        "
+              >
+                <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageChange(e)} ref={imageInputRef}></input>
+                <MdOutlineCameraAlt className="h-5 w-5 text-muted-foreground" />
+                <span>Change photo</span>
+              </button>
+
+              {user?.avatar_url && (
+                <button
+                  type="button"
+                  className="
+            flex w-full items-center gap-3
+            rounded-lg px-3 py-2.5
+            text-sm text-destructive
+            transition-colors duration-150
+            hover:bg-destructive/10
+          "
+                >
+                  <MdDeleteOutline className="h-5 w-5" />
+                  <span>Remove photo</span>
+                </button>
+              )}
+            </div>
+          )}
         </div>
         <div>
           <p

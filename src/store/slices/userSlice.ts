@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-import { updateTheme, updateLayout } from "../../services/userServices";
+import { updateTheme, updateLayout, updateAvatar } from "../../services/userServices";
 
 import type { Profile } from "../../types/profile";
 import type { ThemeMode, LayoutMode } from "../../types/settings";
@@ -16,6 +16,13 @@ const initialState: UserState = {
   isUpdating: false,
   error: null,
 };
+
+export const updateUserAvatar = createAsyncThunk(
+  "user/updateProfile",
+  async ({ userId, avatar }: { userId: string; avatar: File }) => {
+    return await updateAvatar(userId, avatar);
+  }
+);
 
 export const updateUserTheme = createAsyncThunk(
   "user/updateTheme",
@@ -51,6 +58,11 @@ const userSlice = createSlice({
         state.user.card_layout = action.payload;
       }
     },
+    setAvatar: (state, action) => {
+      if (state.user) {
+        state.user.avatar_url = action.payload;
+      }
+    },
   },
 
   extraReducers: (builder) => {
@@ -81,6 +93,20 @@ const userSlice = createSlice({
       .addCase(updateUserLayout.rejected, (state, action) => {
         state.isUpdating = false;
         state.error = action.error.message ?? "Failed to update layout";
+      })
+
+      // Avatar
+      .addCase(updateUserAvatar.pending, (state) => {
+        state.isUpdating = true;
+        state.error = null;
+      })
+      .addCase(updateUserAvatar.fulfilled, (state, action) => {
+        state.isUpdating = false;
+        state.user = action.payload;
+      })
+      .addCase(updateUserAvatar.rejected, (state, action) => {
+        state.isUpdating = false;
+        state.error = action.error.message ?? "Failed to update avatar";
       });
   },
 });
