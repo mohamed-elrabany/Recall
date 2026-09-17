@@ -56,16 +56,16 @@ export default function Sidebar() {
       </div>
       <div className="w-full flex flex-col items-stretch gap-2 border-t border-border pt-2">
         <div className="flex items-center gap-2 px-2 py-3">
-          <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
             {user?.avatar_url ? (
             <img
               src={user.avatar_url}
               alt="Avatar"
-              className="w-12 h-12 rounded-full object-cover"
+              className="w-10 h-10 rounded-full object-cover"
             />
           ) : (
             <div
-              className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-2xl font-extrabold text-primary"
+              className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-lg font-extrabold text-primary"
               style={{ fontFamily: "Manrope, sans-serif" }}
             >
               {initials}

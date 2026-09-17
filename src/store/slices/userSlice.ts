@@ -114,6 +114,18 @@ const userSlice = createSlice({
       .addCase(updateUserAvatar.rejected, (state, action) => {
         state.isUpdating = false;
         state.error = action.error.message ?? "Failed to update avatar";
+      })
+      .addCase(removeUserAvatar.pending, (state) => {
+        state.isUpdating = true;
+        state.error = null;
+      })
+      .addCase(removeUserAvatar.fulfilled, (state, action) => {
+        state.isUpdating = false;
+        state.user = action.payload;
+      })
+      .addCase(removeUserAvatar.rejected, (state, action) => {
+        state.isUpdating = false;
+        state.error = action.error.message ?? "Failed to remove avatar";
       });
   },
 });
