@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-import { updateTheme, updateLayout, updateAvatar } from "../../services/userServices";
+import { updateTheme, updateLayout, updateAvatar, removeAvatar } from "../../services/userServices";
 
 import type { Profile } from "../../types/profile";
 import type { ThemeMode, LayoutMode } from "../../types/settings";
@@ -21,6 +21,13 @@ export const updateUserAvatar = createAsyncThunk(
   "user/updateProfile",
   async ({ userId, avatar }: { userId: string; avatar: File }) => {
     return await updateAvatar(userId, avatar);
+  }
+);
+
+export const removeUserAvatar = createAsyncThunk(
+  "user/removeProfile",
+  async ({ userId }: { userId: string }) => {
+    return await removeAvatar(userId);
   }
 );
 

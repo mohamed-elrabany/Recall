@@ -3,11 +3,15 @@ import Row from "../ui/Row";
 import type { Profile } from "../../types/profile";
 import { useState, useRef } from "react";
 import { getInitials } from "../../utils/nameInitials";
+import { useAppDispatch } from "../../store/hooks";
+import { removeUserAvatar, userActions } from "../../store/slices/userSlice";
 
 import { IoIosArrowForward } from "react-icons/io";
-import { MdOutlineCameraAlt, MdDeleteOutline } from "react-icons/md";
+import { MdOutlineCameraAlt } from "react-icons/md";
+import { RiDeleteBin6Line } from "react-icons/ri";
 
 export default function Account({ user = null, setOpenModal, setAvatarUrl }: { user: Profile | null; setOpenModal: (open: boolean) => void; setAvatarUrl: (url: string) => void }) {
+  const dispatch = useAppDispatch();
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [openAvatarOptions, setOpenAvatarOptions] = useState<boolean>(false);
   const initials = getInitials(user?.full_name);
@@ -24,6 +28,13 @@ export default function Account({ user = null, setOpenModal, setAvatarUrl }: { u
         setAvatarUrl(imageURL);
         setOpenAvatarOptions(false);
         setOpenModal(true);
+      }
+
+      function handleRemoveAvatar() {
+        // Logic to remove avatar goes here
+        dispatch(userActions.setAvatar(null));
+        dispatch(removeUserAvatar({ userId: user?.id || "" }));
+        setOpenAvatarOptions(false);
       }
 
 
@@ -86,28 +97,31 @@ export default function Account({ user = null, setOpenModal, setAvatarUrl }: { u
                 className="
           flex w-full items-center gap-3
           rounded-lg px-3 py-2.5
-          text-sm text-foreground
+          text-xs text-foreground
           transition-colors duration-150
-          hover:bg-primary/10
+          hover:bg-primary/10 hover:text-primary
+          cursor-pointer
         "
               >
                 <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageChange(e)} ref={imageInputRef}></input>
-                <MdOutlineCameraAlt className="h-5 w-5 text-muted-foreground" />
-                <span>Change photo</span>
+                <MdOutlineCameraAlt className="h-5 w-5" />
+                <span>{user?.avatar_url ? "Change photo" : "Upload photo"}</span>
               </button>
 
               {user?.avatar_url && (
                 <button
+                onClick={handleRemoveAvatar}
                   type="button"
                   className="
-            flex w-full items-center gap-3
-            rounded-lg px-3 py-2.5
-            text-sm text-destructive
-            transition-colors duration-150
-            hover:bg-destructive/10
-          "
+                    flex w-full items-center gap-3
+                    rounded-lg px-3 py-2.5
+                    text-xs text-destructive
+                    transition-colors duration-150
+                    hover:bg-red-500/10 hover:text-red-500
+                    cursor-pointer
+                  "
                 >
-                  <MdDeleteOutline className="h-5 w-5" />
+                  <RiDeleteBin6Line className="h-5 w-5" />
                   <span>Remove photo</span>
                 </button>
               )}

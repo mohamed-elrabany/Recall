@@ -1,6 +1,5 @@
 import { supabase } from "../lib/supabaseClient";
 import type { ThemeMode, LayoutMode } from "../types/settings";
-import type { Profile } from "../types/profile";
 
 export async function getCurrentUser() {
     const { data, error } = await supabase
@@ -49,6 +48,35 @@ export async function updateAvatar(userId: string, avatar: File) {
 
   if (error) {
     console.error("Error updating avatar URL:", error);
+    throw error;
+  }
+
+  return data;
+}
+
+export async function removeAvatar(userId: string) {
+  const filePath = `${userId}/avatar.jpg`;
+
+  // 1. Remove image from storage
+  const { error: removeError } = await supabase.storage
+    .from("avatars")
+    .remove([filePath]);
+
+  if (removeError) {
+    console.error("Error removing avatar:", removeError);
+    throw removeError;
+  }
+
+  // 2. Remove URL from profile
+  const { data, error } = await supabase
+    .from("profiles")
+    .update({ avatar_url: null })
+    .eq("id", userId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error removing avatar URL:", error);
     throw error;
   }
 
