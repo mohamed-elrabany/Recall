@@ -33,7 +33,8 @@ export default function Bookmark({ bookmark }: { bookmark: BookMark }) {
           </span>
 
           <div className="min-w-0 flex-1">
-            <p className="font-medium text-foreground group-hover:text-primary transition-colors duration-150 truncate">
+            <p className={`"font-medium min-w-0 truncate ${bookmark?.title ? "text-foreground" : "text-muted-foreground"} transition-colors duration-150"`}
+            style={{ fontFamily: "Manrope, sans-serif" }}>
               {bookmark?.title || bookmark?.url || "Untitled Bookmark"}
             </p>
 
@@ -49,7 +50,7 @@ export default function Bookmark({ bookmark }: { bookmark: BookMark }) {
           <MdFavorite className="text-primary w-4 h-4 shrink-0" />
         )}
       </div>
-      <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3 mb-3">
+      <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2 mb-3">
         {bookmark?.snippet || "No summary yet"}
       </p>
       <div className="flex items-center justify-between">

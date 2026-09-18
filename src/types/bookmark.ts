@@ -27,12 +27,12 @@ export const bookmarks: BookMark[] = [
     is_favorite: true,
     user_id: "user1",
     icon: "https://react.dev/favicon.ico",
-    status: "done"
+    status: "done",
   },
   {
     id: "2",
-    title: "TypeScript Handbook",
-    snippet: "Comprehensive guide to TypeScript's type system.",
+    title: "",
+    snippet: "",
     url: "https://www.typescriptlang.org/docs/handbook/intro.html",
     tags: ["typescript", "docs"],
     created_at: "2026-02-03T00:00:00.000Z",
@@ -41,12 +41,12 @@ export const bookmarks: BookMark[] = [
     is_favorite: false,
     icon: "https://www.typescriptlang.org/favicon-32x32.png",
     user_id: "user2",
-    status: "processing"
+    status: "processing",
   },
   {
     id: "3",
-    title: "React Router",
-    snippet: "Declarative routing for React applications.",
+    title: "",
+    snippet: "",
     url: "https://reactrouter.com",
     tags: ["react", "routing"],
     created_at: "2026-03-21T00:00:00.000Z",
@@ -55,12 +55,12 @@ export const bookmarks: BookMark[] = [
     is_favorite: true,
     icon: "https://reactrouter.com/favicon-light.png",
     user_id: "user3",
-    status: "manual"
+    status: "manual",
   },
   {
     id: "4",
-    title: "Tailwind CSS Docs",
-    snippet: "Utility-first CSS framework documentation.",
+    title: "",
+    snippet: "",
     url: "https://tailwindcss.com/docs",
     tags: ["css", "tailwind", "frontend"],
     created_at: "2026-04-11T00:00:00.000Z",
@@ -69,7 +69,7 @@ export const bookmarks: BookMark[] = [
     is_favorite: false,
     icon: "https://tailwindcss.com/favicons/favicon-32x32.png",
     user_id: "user4",
-    status: "failed"
+    status: "failed",
   },
   {
     id: "5",
@@ -83,6 +83,6 @@ export const bookmarks: BookMark[] = [
     is_favorite: false,
     icon: "https://developer.mozilla.org/favicon-48x48.png",
     user_id: "user5",
-    status: "done"
+    status: "done",
   },
 ];

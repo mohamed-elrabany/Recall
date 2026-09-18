@@ -6,71 +6,119 @@ import { RiGlobalLine } from "react-icons/ri";
 import { MdOutlineCalendarToday } from "react-icons/md";
 import { FiTag, FiEdit3 } from "react-icons/fi";
 import { IoSparkles } from "react-icons/io5";
+import { getBookmarkStatusStyle } from "../utils/bookmarkStatus";
 
 export function Component() {
-  const bookmark = bookmarks[0];
+  const bookmark = bookmarks[4];
+  const statusStyle = getBookmarkStatusStyle(bookmark?.status);
 
   if (!bookmark) return null;
 
   return (
     <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Bookmark Info */}
-      <div className="pb-6 border-b border-border">
-        <div className="flex items-start gap-3 min-w-0">
-          <span className="text-xs bg-muted p-2 rounded-xl w-16 h-16 flex items-center justify-center shrink-0">
-            <img
-              className="w-full h-full object-cover"
-              src={bookmark.snippet}
-              alt="snippet icon"
+      {bookmark?.status !== "done" && (
+        <div
+          className={`mb-4 text-sm flex items-center justify-between gap-4 rounded-xl p-4 ${statusStyle.bgColor} ${statusStyle.color}`}
+        >
+          <div className="flex min-w-0 items-center gap-2">
+            <span
+              className={`h-2 w-2 shrink-0 rounded-full bg-current ${statusStyle.dot}`}
             />
-          </span>
 
-          <div className="min-w-0 flex-1 space-y-2">
-            <div className="flex items-center gap-x-4 gap-y-2 text-[10px] flex-wrap text-muted-foreground">
-              <div className="flex items-center gap-1 min-w-0">
-                <RiGlobalLine className="w-3 h-3 shrink-0" />
-
-                <span className="truncate">
-                  {bookmark.url}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-1 shrink-0">
-                <MdOutlineCalendarToday className="w-3 h-3" />
-
-                <span>
-                  Saved on{" "}
-                  {bookmark?.created_at &&
-                  new Date(bookmark.created_at).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </span>
-              </div>
-            </div>
-
-            <p className="font-bold text-foreground text-xl">
-              {bookmark?.title}
+            <p className="min-w-0 flex-1 leading-relaxed line-clamp-2">
+              {statusStyle.details}
             </p>
           </div>
+
+          {bookmark.status === "failed" && (
+            <button
+              type="button"
+              className="shrink-0 cursor-pointer text-primary transition-all duration-150 ease-in-out hover:underline"
+            >
+              Retry
+            </button>
+          )}
+
+          {bookmark.status === "manual" && (
+            <button
+              type="button"
+              className="shrink-0 cursor-pointer transition-all duration-150 ease-in-out hover:underline"
+            >
+              Complete
+            </button>
+          )}
+        </div>
+      )}
+
+{/* Bookmark Info */}
+<div className="pb-6 border-b border-border overflow-hidden">
+  <div className="flex items-start gap-3 min-w-0">
+    <span className="text-xs bg-muted p-2 rounded-xl w-16 h-16 flex items-center justify-center shrink-0">
+      <img
+        className="w-full h-full object-cover"
+        src={bookmark.icon}
+        alt="snippet icon"
+      />
+    </span>
+
+    {/* IMPORTANT: w-0 allows this flex item to actually shrink */}
+    <div className="min-w-0 w-0 flex-1 space-y-2">
+      {/* URL + Date */}
+      <div className="flex min-w-0 max-w-full items-center gap-x-4 gap-y-2 text-[10px] text-muted-foreground flex-wrap">
+        {/* URL */}
+        <div className="flex min-w-0 max-w-full flex-1 items-center gap-1 overflow-hidden">
+          <RiGlobalLine className="w-3 h-3 shrink-0" />
+
+          <span className="min-w-0 truncate">
+            {bookmark.url}
+          </span>
         </div>
 
-        {/* Tags */}
-        {bookmark.tags && bookmark.tags.length > 0 && (
-          <div className="flex items-center gap-2 flex-wrap mt-4">
-            {bookmark.tags.map((tag) => (
-              <span
-                key={tag}
-                className="text-sm bg-primary/10 text-primary px-2 py-1 font-medium rounded-full"
-              >
-                <FiTag className="w-3 h-3 inline-block mr-1" />
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
+        {/* Date */}
+        <div className="flex shrink-0 items-center gap-1">
+          <MdOutlineCalendarToday className="w-3 h-3 shrink-0" />
+
+          <span className="whitespace-nowrap">
+            Saved on{" "}
+            {bookmark?.created_at &&
+              new Date(bookmark.created_at).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}
+          </span>
+        </div>
       </div>
+
+      {/* Title */}
+      <p
+        className={`min-w-0 max-w-full text-xl font-bold ${
+          bookmark?.title
+            ? "text-foreground break-words"
+            : "text-muted-foreground break-all"
+        }`}
+        style={{ fontFamily: "Manrope, sans-serif" }}
+      >
+        {bookmark?.title || bookmark?.url || "Untitled Bookmark"}
+      </p>
+    </div>
+  </div>
+
+  {/* Tags */}
+  {bookmark.tags && bookmark.tags.length > 0 && (
+    <div className="flex items-center gap-2 flex-wrap mt-4">
+      {bookmark.tags.map((tag) => (
+        <span
+          key={tag}
+          className="text-sm bg-primary/10 text-primary px-2 py-1 font-medium rounded-full"
+        >
+          <FiTag className="w-3 h-3 inline-block mr-1" />
+          {tag}
+        </span>
+      ))}
+    </div>
+  )}
+</div>
 
       {/* Summary */}
       <div className="py-6 border-b border-border">
@@ -123,14 +171,10 @@ export function Component() {
 
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {bookmarks.slice(0, 2).map((relatedBookmark) => (
-            <Bookmark
-              key={relatedBookmark.id}
-              bookmark={relatedBookmark}
-            />
+            <Bookmark key={relatedBookmark.id} bookmark={relatedBookmark} />
           ))}
         </div>
       </div>
     </section>
   );
 }
-
