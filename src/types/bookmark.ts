@@ -8,7 +8,7 @@ export type BookMark={
     embedding?: number[];
     is_favorite?:boolean;
     tags?:string[];
-    status:"processing" | "done" | "needs_manual_input";
+    status:"processing" | "done" | "manual" | "failed";
     created_at?: string;
     updated_at?: string;
     user_id: string;
@@ -41,7 +41,7 @@ export const bookmarks: BookMark[] = [
     is_favorite: false,
     icon: "https://www.typescriptlang.org/favicon-32x32.png",
     user_id: "user2",
-    status: "done"
+    status: "processing"
   },
   {
     id: "3",
@@ -55,7 +55,7 @@ export const bookmarks: BookMark[] = [
     is_favorite: true,
     icon: "https://reactrouter.com/favicon-light.png",
     user_id: "user3",
-    status: "done"
+    status: "manual"
   },
   {
     id: "4",
@@ -69,7 +69,7 @@ export const bookmarks: BookMark[] = [
     is_favorite: false,
     icon: "https://tailwindcss.com/favicons/favicon-32x32.png",
     user_id: "user4",
-    status: "done"
+    status: "failed"
   },
   {
     id: "5",

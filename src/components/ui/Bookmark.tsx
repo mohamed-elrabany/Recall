@@ -4,9 +4,11 @@ import { MdFavorite, MdOutlineCalendarToday } from "react-icons/md";
 
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
+import { getBookmarkStatusStyle } from "../../utils/bookmarkStatus";
 
 export default function Bookmark({ bookmark }: { bookmark: BookMark }) {
   const navigate = useNavigate();
+  const statusStyle = getBookmarkStatusStyle(bookmark?.status);
   return (
     <motion.div
       onClick={() => navigate(`/bookmarks/${bookmark?.id}`)}
@@ -32,7 +34,7 @@ export default function Bookmark({ bookmark }: { bookmark: BookMark }) {
 
           <div className="min-w-0 flex-1">
             <p className="font-medium text-foreground group-hover:text-primary transition-colors duration-150 truncate">
-              {bookmark?.title}
+              {bookmark?.title || bookmark?.url || "Untitled Bookmark"}
             </p>
 
             <p className="text-[10px] text-muted-foreground flex items-center gap-1 min-w-0">
@@ -48,7 +50,7 @@ export default function Bookmark({ bookmark }: { bookmark: BookMark }) {
         )}
       </div>
       <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3 mb-3">
-        {bookmark?.snippet || "No description available."}
+        {bookmark?.snippet || "No summary yet"}
       </p>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1 flex-wrap">
@@ -71,6 +73,35 @@ export default function Bookmark({ bookmark }: { bookmark: BookMark }) {
             })}
         </div>
       </div>
+      {bookmark?.status !== "done" && (
+        <div className="mt-2 flex items-center justify-between gap-2 border-t border-border pt-2 text-[10px] font-semibold">
+          <div className={`flex items-center gap-1.5 ${statusStyle.color}`}>
+            <span
+              className={`h-1.5 w-1.5 rounded-full bg-current ${statusStyle.dot}`}
+            />
+
+            <p>{statusStyle.label}</p>
+          </div>
+
+          {bookmark.status === "failed" && (
+            <button
+              type="button"
+              className="cursor-pointer text-primary transition-all duration-150 ease-in-out hover:underline"
+            >
+              Retry
+            </button>
+          )}
+
+          {bookmark.status === "manual" && (
+            <button
+              type="button"
+              className="cursor-pointer text-primary transition-all duration-150 ease-in-out hover:underline"
+            >
+              Complete
+            </button>
+          )}
+        </div>
+      )}
     </motion.div>
   );
 }
