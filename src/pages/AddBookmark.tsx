@@ -1,13 +1,21 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useState, useEffect } from "react";
+import { useNavigate, Form, useActionData, useNavigation } from "react-router";
 import { useMediaQuery } from "../hooks/useMediaQuery";
 import { useTagManager } from "../hooks/useTagManager";
+import { useAppDispatch } from "../store/hooks";
+
+import { normalizeUrl, getFaviconUrl } from "../utils/url";
+import { addBookmark } from "../services/bookmarkServices";
+import { bookmarkActions } from "../store/slices/bookmarkSlice";
+
+import type { BookMark } from "../types/bookmark";
 
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 
 import { IoClose } from "react-icons/io5";
+import { CgSpinner } from "react-icons/cg";
 import { MdAdd, MdLink } from "react-icons/md";
 import { LuFileText, LuLoaderCircle, LuCheck } from "react-icons/lu";
 
@@ -15,25 +23,32 @@ const buttontags: string[] = ["tag1", "tag2", "tag3", "tag4", "tag5"];
 
 export function Component() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const actionData = useActionData() as {
+    error?: string;
+    bookmark?: BookMark;
+  } | null;
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === "submitting";
   const isMobile: boolean = useMediaQuery("(max-width: 768px)");
-  const { tags, updateTagInput, commitTag, handleTagRemove, handleTagKeyDown } = useTagManager();
+  const { tags, updateTagInput, commitTag, handleTagRemove, handleTagKeyDown } =
+    useTagManager();
 
   const [url, setUrl] = useState("");
   const [notes, setNotes] = useState("");
-  //   const [isLoading, setIsLoading] = useState(false)
-  //   const [fetched, setFetched] = useState(false)
-  //   const [previewTitle, setPreviewTitle] = useState("Example Website")
-  //   const [previewDomain, setPreviewDomain] = useState("example.com")
   const isLoading: boolean = false;
   const fetched: boolean = false;
   const previewTitle: string = "Example Website";
   const previewDomain: string = "example.com";
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    // Handle form submission logic here
-  }
+  const isFormValid: boolean = url.trim() !== "";
 
+  useEffect(() => {
+    if (actionData?.bookmark) {
+      dispatch(bookmarkActions.addBookmark(actionData.bookmark));
+      navigate(-1);
+    }
+  }, [actionData, dispatch, navigate]);
 
   return (
     <AnimatePresence mode="wait">
@@ -99,7 +114,7 @@ export function Component() {
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+          <Form method="post" className="mt-4 space-y-4">
             <Input
               id="url"
               type="text"
@@ -110,6 +125,11 @@ export function Component() {
               value={url}
               onChange={(e) => setUrl(e.target.value)}
             />
+
+            {actionData?.error && (
+              <p className="text-sm text-red-500">{actionData.error}</p>
+            )}
+
             <AnimatePresence initial={false}>
               {(isLoading || fetched) && (
                 <motion.div
@@ -170,31 +190,36 @@ export function Component() {
 
             <div>
               <div>
-                <label
-                  //   htmlFor={props.id}
-                  className="block text-xs font-semibold text-muted-foreground mb-1.5 cursor-pointer"
-                >
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5 cursor-pointer">
                   Tags
                 </label>
                 <div className="flex items-center gap-2 flex-wrap border-2 border-border px-4 py-3 rounded-lg">
-                    {tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="inline-block bg-primary/10 text-[10px] text-primary px-2 py-1 font-medium rounded-full"
-                      >
-                        {tag}
-                        <IoClose
-                          onClick={() => handleTagRemove(tag)}
-                          size={12}
-                          className="ml-1 inline-block cursor-pointer"/>
-                      </span>
-                    ))}
-                    <input type="text"
+                  {tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="inline-block bg-primary/10 text-[10px] text-primary px-2 py-1 font-medium rounded-full"
+                    >
+                      {tag}
+                      <IoClose
+                        onClick={() => handleTagRemove(tag)}
+                        size={12}
+                        className="ml-1 inline-block cursor-pointer"
+                      />
+                    </span>
+                  ))}
+                  <input
+                    type="text"
                     className="flex-1 bg-transparent text-sm text-foreground  placeholder:text-muted-foreground outline-none"
-                    placeholder={tags.length === 0 ? "Add tags..." : undefined} onChange={(e) => updateTagInput(e)}
-                    onKeyDown={(e) => handleTagKeyDown(e)} />
+                    placeholder={tags.length === 0 ? "Add tags..." : undefined}
+                    onChange={(e) => updateTagInput(e)}
+                    onKeyDown={(e) => handleTagKeyDown(e)}
+                  />
                 </div>
               </div>
+
+              {tags.map((tag, index) => (
+                <input key={tag + "-" + index} type="hidden" name="tags" value={tag} />
+              ))}
 
               <div className="text-xs text-muted-foreground mt-2 flex items-center gap-2 flex-wrap">
                 {buttontags.map((tag) => (
@@ -221,13 +246,59 @@ export function Component() {
                 Cancel
               </Button>
 
-              <Button type="submit" variant="primary" className="w-full">
-                Save Bookmark
+              <Button
+                type="submit"
+                variant="primary"
+                className="w-full disabled:opacity-50 disabled:hover:brightness-100 disabled:cursor-not-allowed cursor-pointer"
+                disabled={isSubmitting || !isFormValid}
+              >
+                <AnimatePresence>
+                  {isSubmitting ? <p>Saving</p> : <p>Save Bookmark</p>}
+                  {isSubmitting && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      <CgSpinner className="animate-spin" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </Button>
             </div>
-          </form>
+          </Form>
         </motion.div>
       </motion.div>
     </AnimatePresence>
   );
+}
+
+export async function action({ request }: { request: Request }) {
+  const formData = await request.formData();
+  const rawUrl = formData.get("url") as string;
+  const notes = formData.get("notes") as string;
+  const tags = formData.getAll("tags") as string[];
+
+  const normalizedUrl = normalizeUrl(rawUrl);
+  if (!normalizedUrl) {
+    return { error: "Please enter a valid URL." };
+  }
+
+  const faviconUrl = getFaviconUrl(normalizedUrl);
+
+  try {
+    const bookmark = await addBookmark({
+      icon: faviconUrl,
+      url: normalizedUrl,
+      notes,
+      tags,
+      status: "processing",
+    });
+
+    return { bookmark };
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Adding bookmark failed";
+    return { error: message };
+  }
 }

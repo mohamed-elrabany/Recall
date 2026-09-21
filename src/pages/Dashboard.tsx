@@ -1,9 +1,13 @@
 import Bookmark from "../components/ui/Bookmark";
-import {bookmarks} from "../types/bookmark";
 import { useLayout } from "../hooks/useLayout";
+import { useLoaderData } from "react-router";
+import { useAppSelector } from "../store/hooks";
+import { fetchBookmarks } from "../services/bookmarkServices";
+// import {bookmarks} from "../types/bookmark";
 
 export function Component() {
     const { layout } = useLayout();
+    const bookmarks = useAppSelector((state) => state.bookmarks);
     return(
         <div className="px-4 sm:px-6 pt-6 min-h-screen">
             <div className="flex items-center justify-between">
@@ -17,4 +21,14 @@ export function Component() {
             </div>
         </div>
     );
+}
+
+export async function loader() {
+    try{
+        const bookmarks = await fetchBookmarks();
+        return { bookmarks };
+    } catch (error) {
+        console.error("Error fetching bookmarks:", error);
+        return { bookmarks: [] };
+    }
 }

@@ -1,11 +1,10 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import {bookmarks, type BookMark } from "../../types/bookmark";
+import type { BookMark } from "../../types/bookmark";
 
-const initialState: BookMark[] = bookmarks || [];
+const initialState: BookMark[] = [];
 
 const bookmarkSlice = createSlice({
   name: "bookmarks",
-
   initialState,
 
   reducers: {
@@ -14,12 +13,17 @@ const bookmarkSlice = createSlice({
     },
 
     addBookmark: (state, action: PayloadAction<BookMark>) => {
-      state.push(action.payload);
+      const exists = state.some(
+        (bookmark) => bookmark.id === action.payload.id,
+      );
+      if (!exists) {
+        state.unshift(action.payload);
+      }
     },
 
     updateBookmark: (state, action: PayloadAction<BookMark>) => {
       const index = state.findIndex(
-        (bookmark) => bookmark.id === action.payload.id
+        (bookmark) => bookmark.id === action.payload.id,
       );
 
       if (index !== -1) {
@@ -28,9 +32,7 @@ const bookmarkSlice = createSlice({
     },
 
     deleteBookmark: (state, action: PayloadAction<string>) => {
-      return state.filter(
-        (bookmark) => bookmark.id !== action.payload
-      );
+      return state.filter((bookmark) => bookmark.id !== action.payload);
     },
   },
 });
