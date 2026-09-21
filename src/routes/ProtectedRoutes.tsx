@@ -16,6 +16,7 @@ import Topbar from "../components/layout/Topbar";
 import Sidebar from "../components/layout/Sidebar";
 import BottomNav from "../components/layout/BottomNav";
 import BackNav from "../components/layout/BackNav";
+import BookmarkDetailsNav from "../components/layout/BookmarkDetailsNav";
 
 const DashboardPage = lazyPage(() => import("../pages/Dashboard"));
 const FavoritesPage = lazyPage(() => import("../pages/Favorites"));
@@ -39,10 +40,11 @@ export default function ProtectedRoutes() {
   )?.backgroundLocation;
 
   const current = matches[matches.length - 1];
+  const bookmarkId = current?.params.id;
 
   const handle = current?.handle as
     | {
-        topbar?: "default" | "back" | "none";
+        topbar?: "default" | "back" | "bookmark" | "none";
         title?: string;
       }
     | undefined;
@@ -84,11 +86,13 @@ export default function ProtectedRoutes() {
       <Sidebar />
 
       <main className="flex-1 pb-20 md:pb-0">
-        {handle?.topbar === "back" ? (
-          <BackNav title={handle.title} />
-        ) : handle?.topbar === "none" ? null : (
-          <Topbar />
-        )}
+{handle?.topbar === "bookmark" ? (
+  <BookmarkDetailsNav id={bookmarkId} />
+) : handle?.topbar === "back" ? (
+  <BackNav title={handle.title} />
+) : handle?.topbar === "none" ? null : (
+  <Topbar />
+)}
 
         {/* Normal protected page OR background page behind modal */}
         {backgroundLocation ? (

@@ -32,7 +32,7 @@ const router = createBrowserRouter([
         children: [
           { path: "add", lazy: () => import("../pages/AddBookmark"), handle: { topbar: "none" } },
           { path: "edit/:id", lazy: () => import("../pages/EditBookmark"), handle: { topbar: "none" } },
-          { path: ":id", lazy: () => import("../pages/BookmarkDetails"), handle: { topbar: "back", title: "Bookmark Details" } },
+          { path: ":id", lazy: () => import("../pages/BookmarkDetails"), handle: { topbar: "bookmark" } },
         ],
       },
     ],

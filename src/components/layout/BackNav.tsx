@@ -4,22 +4,20 @@ import { IoIosArrowRoundBack } from "react-icons/io";
 // import { MdFavoriteBorder, MdFavorite } from "react-icons/md";
 // import { HiOutlineExternalLink } from "react-icons/hi";
 
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 
 import Logo from "../ui/Logo";
 // import Button from "../ui/Button";
 // import LinkButton from "../ui/LinkButton";
 
-export default function BackNav({ title= null }: { title?: string | null; }) {
+export default function BackNav({ title= null, children }: { title?: string | null; children?: React.ReactNode; }) {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  function handleNavigation(){
-    if(navigate.length > 0){
-      navigate(-1);
-    }else{
-      navigate("/");
-    }
-  }
+function handleNavigation() {
+  if (location.key !== "default") navigate(-1);
+  else navigate("/");
+}
 
   return (
     <header className="sticky top-0 z-50 flex items-center justify-between bg-background/70 backdrop-blur-md border-b border-border px-4 sm:px-6 py-3">
@@ -40,7 +38,7 @@ export default function BackNav({ title= null }: { title?: string | null; }) {
         </h4>
       )}
 
-      <Logo />
+      {children ?? <Logo />}
 
       {/* {!title ? <Logo /> : (
         <div className="flex items-center gap-2">

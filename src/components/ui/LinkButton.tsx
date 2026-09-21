@@ -5,6 +5,8 @@ type LinkButtonProps = {
   children: React.ReactNode;
   className?: string;
   variant?: "primary" | "secondary";
+  target?: string;
+  rel?: string;
 };
 
 export default function LinkButton({
@@ -12,6 +14,7 @@ export default function LinkButton({
   children,
   className = "",
   variant = "primary",
+  ...props
 }: LinkButtonProps) {
   const variants = {
     primary: "bg-primary text-white hover:brightness-90",
@@ -21,6 +24,7 @@ export default function LinkButton({
 
   return (
     <Link
+      {...props}
       to={to}
       className={`
         flex items-center justify-center gap-2

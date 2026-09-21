@@ -50,75 +50,73 @@ export function Component() {
         </div>
       )}
 
-{/* Bookmark Info */}
-<div className="pb-6 border-b border-border overflow-hidden">
-  <div className="flex items-start gap-3 min-w-0">
-    <span className="text-xs bg-muted p-2 rounded-xl w-16 h-16 flex items-center justify-center shrink-0">
-      <img
-        className="w-full h-full object-cover"
-        src={bookmark.icon}
-        alt="snippet icon"
-      />
-    </span>
-
-    {/* IMPORTANT: w-0 allows this flex item to actually shrink */}
-    <div className="min-w-0 w-0 flex-1 space-y-2">
-      {/* URL + Date */}
-      <div className="flex min-w-0 max-w-full items-center gap-x-4 gap-y-2 text-[10px] text-muted-foreground flex-wrap">
-        {/* URL */}
-        <div className="flex min-w-0 max-w-full flex-1 items-center gap-1 overflow-hidden">
-          <RiGlobalLine className="w-3 h-3 shrink-0" />
-
-          <span className="min-w-0 truncate">
-            {bookmark.url}
+      {/* Bookmark Info */}
+      <div className="pb-6 border-b border-border overflow-hidden">
+        <div className="flex items-start gap-3 min-w-0">
+          <span className="text-xs bg-muted p-2 rounded-xl w-16 h-16 flex items-center justify-center shrink-0">
+            <img
+              className="w-full h-full object-cover"
+              src={bookmark.icon}
+              alt="snippet icon"
+            />
           </span>
+
+          {/* IMPORTANT: w-0 allows this flex item to actually shrink */}
+          <div className="min-w-0 w-0 flex-1 space-y-2">
+            {/* URL + Date */}
+            <div className="flex min-w-0 max-w-full items-center gap-x-4 gap-y-2 text-[10px] text-muted-foreground flex-wrap">
+              {/* URL */}
+              <div className="flex min-w-0 max-w-full flex-1 items-center gap-1 overflow-hidden">
+                <RiGlobalLine className="w-3 h-3 shrink-0" />
+
+                <span className="min-w-0 truncate">{bookmark.url}</span>
+              </div>
+
+              {/* Date */}
+              <div className="flex shrink-0 items-center gap-1">
+                <MdOutlineCalendarToday className="w-3 h-3 shrink-0" />
+
+                <span className="whitespace-nowrap">
+                  Saved on{" "}
+                  {bookmark?.created_at &&
+                    new Date(bookmark.created_at).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                </span>
+              </div>
+            </div>
+
+            {/* Title */}
+            <p
+              className={`min-w-0 max-w-full text-xl font-bold ${
+                bookmark?.title
+                  ? "text-foreground break-words"
+                  : "text-muted-foreground break-all"
+              }`}
+              style={{ fontFamily: "Manrope, sans-serif" }}
+            >
+              {bookmark?.title || bookmark?.url || "Untitled Bookmark"}
+            </p>
+          </div>
         </div>
 
-        {/* Date */}
-        <div className="flex shrink-0 items-center gap-1">
-          <MdOutlineCalendarToday className="w-3 h-3 shrink-0" />
-
-          <span className="whitespace-nowrap">
-            Saved on{" "}
-            {bookmark?.created_at &&
-              new Date(bookmark.created_at).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              })}
-          </span>
-        </div>
+        {/* Tags */}
+        {bookmark.tags && bookmark.tags.length > 0 && (
+          <div className="flex items-center gap-2 flex-wrap mt-4">
+            {bookmark.tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-sm bg-primary/10 text-primary px-2 py-1 font-medium rounded-full"
+              >
+                <FiTag className="w-3 h-3 inline-block mr-1" />
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
-
-      {/* Title */}
-      <p
-        className={`min-w-0 max-w-full text-xl font-bold ${
-          bookmark?.title
-            ? "text-foreground break-words"
-            : "text-muted-foreground break-all"
-        }`}
-        style={{ fontFamily: "Manrope, sans-serif" }}
-      >
-        {bookmark?.title || bookmark?.url || "Untitled Bookmark"}
-      </p>
-    </div>
-  </div>
-
-  {/* Tags */}
-  {bookmark.tags && bookmark.tags.length > 0 && (
-    <div className="flex items-center gap-2 flex-wrap mt-4">
-      {bookmark.tags.map((tag) => (
-        <span
-          key={tag}
-          className="text-sm bg-primary/10 text-primary px-2 py-1 font-medium rounded-full"
-        >
-          <FiTag className="w-3 h-3 inline-block mr-1" />
-          {tag}
-        </span>
-      ))}
-    </div>
-  )}
-</div>
 
       {/* Summary */}
       <div className="py-6 border-b border-border">
