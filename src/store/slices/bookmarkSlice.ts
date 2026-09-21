@@ -9,7 +9,7 @@ const bookmarkSlice = createSlice({
   initialState,
 
   reducers: {
-    setBookmarks: (state, action: PayloadAction<BookMark[]>) => {
+    setBookmarks: (_, action: PayloadAction<BookMark[]>) => {
       return action.payload;
     },
 
