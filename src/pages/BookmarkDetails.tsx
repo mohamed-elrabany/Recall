@@ -1,16 +1,22 @@
 import { bookmarks } from "../types/bookmark";
 import Bookmark from "../components/ui/Bookmark";
 import Button from "../components/ui/Button";
+import { useAppSelector } from "../store/hooks";
+import { useParams } from "react-router";
 
 import { RiGlobalLine } from "react-icons/ri";
 import { MdOutlineCalendarToday } from "react-icons/md";
 import { FiTag, FiEdit3 } from "react-icons/fi";
 import { IoSparkles } from "react-icons/io5";
 import { getBookmarkStatusStyle } from "../utils/bookmarkStatus";
+import { selectBookmarkById } from "../store/selectors/bookmarkSelectors";
 
 export function Component() {
-  const bookmark = bookmarks[4];
-  const statusStyle = getBookmarkStatusStyle(bookmark?.status);
+  const { bookmarkId } = useParams<{ bookmarkId: string }>();
+  const bookmark = useAppSelector((state) =>
+    bookmarkId ? selectBookmarkById(state, bookmarkId) : undefined,
+  );
+  const statusStyle = getBookmarkStatusStyle(bookmark?.status || "done");
 
   if (!bookmark) return null;
 

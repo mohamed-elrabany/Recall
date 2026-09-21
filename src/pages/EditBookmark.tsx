@@ -1,8 +1,10 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useMediaQuery } from "../hooks/useMediaQuery";
 import { useTagManager } from "../hooks/useTagManager";
+import { useAppSelector } from "../store/hooks";
+import { selectBookmarkById } from "../store/selectors/bookmarkSelectors";
 
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
@@ -14,14 +16,18 @@ import { LuFileText, LuLoaderCircle, LuCheck, LuAlignLeft  } from "react-icons/l
 const buttontags: string[] = ["tag1", "tag2", "tag3", "tag4", "tag5"];
 
 export function Component() {
+  const { bookmarkId } = useParams<{ bookmarkId: string }>();
+  const bookmark = useAppSelector((state) =>
+    bookmarkId ? selectBookmarkById(state, bookmarkId) : undefined,
+  );
   const navigate = useNavigate();
   const isMobile: boolean = useMediaQuery("(max-width: 768px)");
   const { tags, updateTagInput, commitTag, handleTagRemove, handleTagKeyDown } = useTagManager();
 
-  const [url, setUrl] = useState("");
-  const [title, setTitle] = useState("");
-  const [snippet, setSnippet] = useState("");
-  const [notes, setNotes] = useState("");
+  const [url, setUrl] = useState(bookmark?.url || "");
+  const [title, setTitle] = useState(bookmark?.title || "");
+  const [snippet, setSnippet] = useState(bookmark?.snippet || "");
+  const [notes, setNotes] = useState(bookmark?.notes || "");
   //   const [isLoading, setIsLoading] = useState(false)
   //   const [fetched, setFetched] = useState(false)
   //   const [previewTitle, setPreviewTitle] = useState("Example Website")
@@ -203,7 +209,7 @@ export function Component() {
                   Tags
                 </label>
                 <div className="flex items-center gap-2 flex-wrap border-2 border-border px-4 py-3 rounded-lg">
-                    {tags.map((tag) => (
+                    {bookmark?.tags?.map((tag) => (
                       <span
                         key={tag}
                         className="inline-block bg-primary/10 text-[10px] text-primary px-2 py-1 font-medium rounded-full"
