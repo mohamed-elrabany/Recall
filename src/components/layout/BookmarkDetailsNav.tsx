@@ -1,5 +1,6 @@
 import BackNav from "./BackNav";
 import LinkButton from "../ui/LinkButton";
+import { useNavigate } from "react-router";
 
 
 import { FiEdit3 } from "react-icons/fi";
@@ -12,6 +13,7 @@ export default function BookmarkDetailsNav({
 }: {
   id?: string | null;
 }) {
+    const navigate = useNavigate();
     const is_favorite = false; // Replace with actual logic to determine if the bookmark is a favorite
   return (
     <BackNav>
@@ -34,7 +36,9 @@ export default function BookmarkDetailsNav({
             <MdFavoriteBorder className="w-4 h-4" />
             )}
         </button>
-        <button className="flex items-center p-2 rounded-md bg-muted-foreground/10 text-muted-foreground hover:text-foreground">
+        <button 
+        onClick={() => navigate(`/bookmarks/edit/${id}`)}
+        className="flex items-center p-2 rounded-md bg-muted-foreground/10 text-muted-foreground hover:text-foreground">
           <FiEdit3 className="w-4 h-4" />
         </button>
         <button className="flex items-center p-2 rounded-md bg-muted-foreground/10 text-muted-foreground hover:text-red-500">

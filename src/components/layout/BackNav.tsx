@@ -1,14 +1,7 @@
 import { IoIosArrowRoundBack } from "react-icons/io";
-// import { FiEdit3 } from "react-icons/fi";
-// import { RiDeleteBin6Line } from "react-icons/ri";
-// import { MdFavoriteBorder, MdFavorite } from "react-icons/md";
-// import { HiOutlineExternalLink } from "react-icons/hi";
-
 import { useNavigate, useLocation } from "react-router";
 
 import Logo from "../ui/Logo";
-// import Button from "../ui/Button";
-// import LinkButton from "../ui/LinkButton";
 
 export default function BackNav({ title= null, children }: { title?: string | null; children?: React.ReactNode; }) {
   const navigate = useNavigate();
@@ -39,18 +32,6 @@ function handleNavigation() {
       )}
 
       {children ?? <Logo />}
-
-      {/* {!title ? <Logo /> : (
-        <div className="flex items-center gap-2">
-          <LinkButton to={details ? `/bookmarks/${details}` : "/"} variant="secondary" className="flex items-center gap-2">
-            <HiOutlineExternalLink className="w-5 h-5" />
-            Open Link
-          </LinkButton>
-          <button className="flex items-center p-2 rounded-md bg-muted-foreground/10 text-muted-foreground hover:text-primary"><MdFavoriteBorder className="w-4 h-4" /></button>
-          <button className="flex items-center p-2 rounded-md bg-muted-foreground/10 text-muted-foreground hover:text-foreground"><FiEdit3 className="w-4 h-4" /></button>
-          <button className="flex items-center p-2 rounded-md bg-muted-foreground/10 text-muted-foreground hover:text-red-500"><RiDeleteBin6Line className="w-4 h-4" /></button>
-        </div>
-      )} */}
     </header>
   );
 }
