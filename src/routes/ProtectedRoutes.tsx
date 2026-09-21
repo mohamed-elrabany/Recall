@@ -40,7 +40,7 @@ export default function ProtectedRoutes() {
   )?.backgroundLocation;
 
   const current = matches[matches.length - 1];
-  const bookmarkId = current?.params.id;
+  const bookmarkId: string | undefined = current?.params.bookmarkId;
 
   const handle = current?.handle as
     | {
@@ -102,7 +102,7 @@ export default function ProtectedRoutes() {
             <Route path="tags" element={<TagsPage />} />
             <Route path="settings" element={<SettingsPage />} />
             <Route
-              path="bookmarks/:id"
+              path="bookmarks/:bookmarkId"
               element={<BookmarkDetailsPage />}
             />
           </Routes>

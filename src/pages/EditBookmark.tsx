@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useMediaQuery } from "../hooks/useMediaQuery";
 import { useTagManager } from "../hooks/useTagManager";
@@ -20,6 +20,9 @@ export function Component() {
   const bookmark = useAppSelector((state) =>
     bookmarkId ? selectBookmarkById(state, bookmarkId) : undefined,
   );
+  console.log("Edit bookmark ID:", bookmarkId);
+  console.log("bookmark:", bookmark);
+  const initialRef = useRef(bookmark);
   const navigate = useNavigate();
   const isMobile: boolean = useMediaQuery("(max-width: 768px)");
   const { tags, updateTagInput, commitTag, handleTagRemove, handleTagKeyDown } = useTagManager();
@@ -36,6 +39,13 @@ export function Component() {
   const fetched: boolean = false;
   const previewTitle: string = "Example Website";
   const previewDomain: string = "example.com";
+
+  const isUpdated: boolean = 
+    url !== initialRef.current?.url ||
+    title !== initialRef.current?.title ||
+    snippet !== initialRef.current?.snippet ||
+    notes !== initialRef.current?.notes ||
+    tags.length !== initialRef.current?.tags?.length;
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -78,7 +88,7 @@ export function Component() {
           className="
                 bg-card
                 w-full
-                max-h-[90vh]
+                max-h-[80vh]
                 overflow-y-auto
                 rounded-t-2xl
                 shadow-lg

@@ -11,9 +11,9 @@ import { MdFavoriteBorder, MdFavorite } from "react-icons/md";
 import { HiOutlineExternalLink } from "react-icons/hi";
 
 export default function BookmarkDetailsNav({
-  id= null
+  id= undefined
 }: {
-  id: string | null;
+  id: string | undefined;
 }) {
     const navigate = useNavigate();
     const bookmark = useAppSelector((state) =>

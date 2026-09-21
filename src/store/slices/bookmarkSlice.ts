@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { BookMark } from "../../types/bookmark";
+import {bookmarks, type BookMark } from "../../types/bookmark";
 
-const initialState: BookMark[] = [];
+const initialState: BookMark[] = bookmarks || [];
 
 const bookmarkSlice = createSlice({
   name: "bookmarks",
@@ -34,7 +34,6 @@ const bookmarkSlice = createSlice({
     },
   },
 });
-
 
 export const bookmarkActions = bookmarkSlice.actions;
 export const bookmarkReducer = bookmarkSlice.reducer;

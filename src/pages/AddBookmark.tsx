@@ -70,7 +70,7 @@ export function Component() {
           className="
                 bg-card
                 w-full
-                max-h-[90vh]
+                max-h-[80vh]
                 overflow-y-auto
                 rounded-t-2xl
                 shadow-lg
