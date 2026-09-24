@@ -1,35 +1,45 @@
 import { useEffect, useState, useCallback } from "react";
-import { useAppDispatch } from "../store/hooks";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { fetchBookmarks } from "../services/bookmarkServices";
 import { bookmarkActions } from "../store/slices/bookmarkSlice";
-import { supabase } from "../lib/supabaseClient";
 
 export function useBookmarks() {
   const dispatch = useAppDispatch();
-  const [isLoading, setIsLoading] = useState(true);
+
+  const { isAuthenticated, isLoading: authLoading } = useAppSelector(
+    (state) => state.auth,
+  );
+
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
+    if (!isAuthenticated) {
+      dispatch(bookmarkActions.setBookmarks([]));
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
+
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        dispatch(bookmarkActions.setBookmarks([]));
-        return;
-      }
-      const bookmarks = await fetchBookmarks(user?.id);
-      dispatch(bookmarkActions.setBookmarks(bookmarks ?? []));
+      const bookmarks = await fetchBookmarks();
+
+      dispatch(bookmarkActions.setBookmarks(bookmarks));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load bookmarks");
+      setError(
+        err instanceof Error ? err.message : "Failed to load bookmarks",
+      );
     } finally {
       setIsLoading(false);
     }
-  }, [dispatch]);
+  }, [dispatch, isAuthenticated]);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    if (!authLoading) {
+      load();
+    }
+  }, [authLoading, load]);
 
   return { isLoading, error, refetch: load };
 }

@@ -1,17 +1,25 @@
 import { supabase } from "../lib/supabaseClient";
 import type { BookMark } from "../types/bookmark";
 
-export async function fetchBookmarks(): Promise<BookMark[] | null> {
+export async function fetchBookmarks(): Promise<BookMark[]> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return [];
+  }
+
   const { data, error } = await supabase
     .from("bookmarks")
     .select("*")
-    .eq("user_id", (await supabase.auth.getUser()).data.user?.id);
+    .eq("user_id", user.id);
 
   if (error) {
     throw new Error(error.message);
   }
 
-  return data;
+  return data ?? [];
 }
 
 export async function addBookmark(bookmark: BookMark): Promise<BookMark | null> {

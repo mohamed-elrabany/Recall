@@ -22,13 +22,3 @@ export function Component() {
         </div>
     );
 }
-
-export async function loader() {
-    try{
-        const bookmarks = await fetchBookmarks();
-        return { bookmarks };
-    } catch (error) {
-        console.error("Error fetching bookmarks:", error);
-        return { bookmarks: [] };
-    }
-}
