@@ -1,11 +1,11 @@
 import { supabase } from "../lib/supabaseClient";
 import type { BookMark } from "../types/bookmark";
 
-export async function fetchBookmarks(id: string): Promise<BookMark[] | null> {
+export async function fetchBookmarks(): Promise<BookMark[] | null> {
   const { data, error } = await supabase
     .from("bookmarks")
     .select("*")
-    .eq("user_id", id);
+    .eq("user_id", (await supabase.auth.getUser()).data.user?.id);
 
   if (error) {
     throw new Error(error.message);
