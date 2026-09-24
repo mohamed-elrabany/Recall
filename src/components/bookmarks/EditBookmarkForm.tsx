@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, useRef } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, Form, useNavigation } from "react-router";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 import { useTagManager } from "../../hooks/useTagManager";
 import type { BookMark } from "../../types/bookmark";
@@ -9,6 +9,7 @@ import Input from "../ui/Input";
 import Button from "../ui/Button";
 
 import { IoClose } from "react-icons/io5";
+import { CgSpinner } from "react-icons/cg";
 import { MdAdd, MdLink } from "react-icons/md";
 import {
   LuFileText,
@@ -19,9 +20,11 @@ import {
 
 const buttontags: string[] = ["tag1", "tag2", "tag3", "tag4", "tag5"];
 
-export default function EditBookmarkForm({ bookmark }: { bookmark: BookMark }) {
+export default function EditBookmarkForm({ bookmark, error }: { bookmark: BookMark; error?: string }) {
   const initial = useRef(bookmark).current; // snapshot of the original values
   const navigate = useNavigate();
+  const navigation = useNavigation();
+  const isSubmitting: boolean = navigation.state === "submitting";
   const isMobile: boolean = useMediaQuery("(max-width: 768px)");
   const { tags, updateTagInput, commitTag, handleTagRemove, handleTagKeyDown } =
     useTagManager(bookmark.tags || []);
@@ -47,11 +50,6 @@ export default function EditBookmarkForm({ bookmark }: { bookmark: BookMark }) {
     notes !== initial.notes ||
     !sameTags;
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (!isUpdated) return;
-    // save logic here
-  }
 
   return (
     <AnimatePresence mode="wait">
@@ -94,8 +92,6 @@ export default function EditBookmarkForm({ bookmark }: { bookmark: BookMark }) {
                 shadow-lg
                 p-6
                 md:max-w-xl
-                md:max-h-none
-                md:overflow-visible
                 md:rounded-2xl
             "
         >
@@ -117,7 +113,9 @@ export default function EditBookmarkForm({ bookmark }: { bookmark: BookMark }) {
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+          {error && <p className="text-sm text-red-500">{error}</p>}
+
+          <Form method="post" className="mt-4 space-y-4">
             <Input
               id="url"
               type="text"
@@ -241,6 +239,9 @@ export default function EditBookmarkForm({ bookmark }: { bookmark: BookMark }) {
                   />
                 </div>
               </div>
+                {tags.filter(Boolean).map((tag, index) => (
+                    <input key={tag+"-"+index} type="hidden" name="tags" value={tag} />
+                ))}
 
               <div className="text-xs text-muted-foreground mt-2 flex items-center gap-2 flex-wrap">
                 {buttontags.map((tag) => (
@@ -271,12 +272,23 @@ export default function EditBookmarkForm({ bookmark }: { bookmark: BookMark }) {
                 disabled={!isUpdated}
                 type="submit"
                 variant="primary"
-                className="w-full disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                className="w-full"
               >
-                Save Bookmark
+                                <AnimatePresence>
+                  {isSubmitting ? <p>Updating</p> : <p>Update Bookmark</p>}
+                  {isSubmitting && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      <CgSpinner className="animate-spin" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </Button>
             </div>
-          </form>
+          </Form>
         </motion.div>
       </motion.div>
     </AnimatePresence>

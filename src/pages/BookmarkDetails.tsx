@@ -8,6 +8,7 @@ import { RiGlobalLine } from "react-icons/ri";
 import { MdOutlineCalendarToday } from "react-icons/md";
 import { FiTag, FiEdit3 } from "react-icons/fi";
 import { IoSparkles } from "react-icons/io5";
+
 import { getBookmarkStatusStyle } from "../utils/bookmarkStatus";
 import { selectBookmarkById } from "../store/selectors/bookmarkSelectors";
 
@@ -19,6 +20,7 @@ export function Component() {
   const statusStyle = getBookmarkStatusStyle(bookmark?.status || "done");
 
   if (!bookmark) return null;
+
 
   return (
     <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

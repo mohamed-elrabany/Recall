@@ -31,8 +31,17 @@ const bookmarkSlice = createSlice({
       }
     },
 
-    deleteBookmark: (state, action: PayloadAction<string>) => {
+    removeBookmark: (state, action: PayloadAction<string>) => {
       return state.filter((bookmark) => bookmark.id !== action.payload);
+    },
+
+    toggleFavorite: (state, action: PayloadAction<string>) => {
+      const index = state.findIndex(
+        (bookmark) => bookmark.id === action.payload,
+      );
+      if (index !== -1) {
+        state[index].is_favorite = !state[index].is_favorite;
+      }
     },
   },
 });

@@ -46,7 +46,7 @@ export function Component() {
   useEffect(() => {
     if (actionData?.bookmark) {
       dispatch(bookmarkActions.addBookmark(actionData.bookmark));
-      navigate(-1);
+      navigate("/dashboard");
     }
   }, [actionData, dispatch, navigate]);
 
@@ -249,7 +249,7 @@ export function Component() {
               <Button
                 type="submit"
                 variant="primary"
-                className="w-full disabled:opacity-50 disabled:hover:brightness-100 disabled:cursor-not-allowed cursor-pointer"
+                className="w-full"
                 disabled={isSubmitting || !isFormValid}
               >
                 <AnimatePresence>

@@ -4,13 +4,13 @@ import AppRoutes from "./routes/AppRoutes";
 
 import { useAuth } from "./hooks/useAuth";
 import { useTheme } from "./hooks/useTheme";
-import { useBookmark } from "./hooks/useBookmark";
+import { useBookmarks } from "./hooks/useBookmark";
 
 
 function App() {
   useAuth();
   useTheme();
-  useBookmark();
+  useBookmarks();
 
   return <AppRoutes />;
 }

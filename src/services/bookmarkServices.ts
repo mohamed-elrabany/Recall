@@ -1,11 +1,11 @@
 import { supabase } from "../lib/supabaseClient";
 import type { BookMark } from "../types/bookmark";
 
-export async function fetchBookmarks(): Promise<BookMark[] | null> {
+export async function fetchBookmarks(id: string): Promise<BookMark[] | null> {
   const { data, error } = await supabase
     .from("bookmarks")
     .select("*")
-    .eq("user_id", (await supabase.auth.getUser()).data.user?.id);
+    .eq("user_id", id);
 
   if (error) {
     throw new Error(error.message);
@@ -47,8 +47,8 @@ export async function updateBookmark(id: string, bookmark: BookMark): Promise<Bo
   return data;
 }
 
-export async function deleteBookmark(id: string): Promise<unknown> {
-  const { data, error } = await supabase
+export async function deleteBookmark(id: string): Promise<void> {
+  const {  error } = await supabase
     .from("bookmarks")
     .delete()
     .eq("id", id);
@@ -56,8 +56,6 @@ export async function deleteBookmark(id: string): Promise<unknown> {
   if (error) {
     throw new Error(error.message);
   }
-
-  return data;
 }
 
 export async function getBookmarkById(id: string): Promise<BookMark | null> {
