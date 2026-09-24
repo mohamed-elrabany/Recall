@@ -1,9 +1,6 @@
 import Bookmark from "../components/ui/Bookmark";
 import { useLayout } from "../hooks/useLayout";
-// import { useLoaderData } from "react-router";
 import { useAppSelector } from "../store/hooks";
-import { fetchBookmarks } from "../services/bookmarkServices";
-// import {bookmarks} from "../types/bookmark";
 
 export function Component() {
     const { layout } = useLayout();
