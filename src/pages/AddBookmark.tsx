@@ -292,7 +292,7 @@ export async function action({ request }: { request: Request }) {
       url: normalizedUrl,
       notes,
       tags,
-      status: "processing",
+      status: "failed",
     });
 
     return { bookmark };

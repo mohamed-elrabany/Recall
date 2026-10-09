@@ -1,13 +1,13 @@
 export type BookMark={
     id?:string;
     url:string;
-    title?:string;
-    snippet?: string;
-    notes?:string;
+    title?:string | null;
+    snippet?: string | null;
+    notes?:string | null;
     icon?: string;
     embedding?: number[];
     is_favorite?:boolean;
-    tags?:string[];
+    tags?:string[] | null;
     status:"processing" | "done" | "manual" | "failed";
     created_at?: string;
     updated_at?: string;

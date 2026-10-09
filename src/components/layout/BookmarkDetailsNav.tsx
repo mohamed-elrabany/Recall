@@ -85,8 +85,9 @@ export default function BookmarkDetailsNav({
             )}
           </button>
           <button
+          disabled={bookmark?.status === "processing"}
             onClick={() => navigate(`/bookmarks/edit/${bookmark?.id}`)}
-            className="flex items-center p-2 rounded-md bg-muted-foreground/10 text-muted-foreground hover:text-foreground cursor-pointer"
+            className={`flex items-center p-2 rounded-md bg-muted-foreground/10 text-muted-foreground hover:text-foreground ${bookmark?.status === "processing" ? "cursor-not-allowed" : "cursor-pointer"}`}
           >
             <FiEdit3 className="w-4 h-4" />
           </button>

@@ -1,4 +1,7 @@
 import TagButton from "../components/ui/TagButton";
+// import { useState } from "react";
+// import { useAppSelector } from "../store/hooks";
+// import { selectBookmarksByTag } from "../store/selectors/bookmarkSelectors";
 import { useLayout } from "../hooks/useLayout";
 
 const tags = [
@@ -11,7 +14,12 @@ const tags = [
 ];
 
 export function Component() {
+  // const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const { layout } = useLayout();
+//   const bookmarks = useAppSelector((state) =>
+//   selectBookmarksByTag(state, selectedTag)
+// );
+
   return (
     <div className="px-4 sm:px-6 pt-6 min-h-screen space-y-8">
       <div className="flex flex-col items-start justify-y-start gap-4">
