@@ -1,32 +1,49 @@
 import { bookmarks } from "../types/bookmark";
 import Bookmark from "../components/ui/Bookmark";
 import Button from "../components/ui/Button";
-import { useAppSelector } from "../store/hooks";
-import { useParams } from "react-router";
+import { useAppSelector, useAppDispatch } from "../store/hooks";
+import { useParams, useNavigate } from "react-router";
 
 import { RiGlobalLine } from "react-icons/ri";
 import { MdOutlineCalendarToday } from "react-icons/md";
 import { FiTag, FiEdit3 } from "react-icons/fi";
 import { IoSparkles } from "react-icons/io5";
 
-import { getBookmarkStatusStyle } from "../utils/bookmarkStatus";
+import { retryEmbedding } from "../services/bookmarkServices";
+import { getBookmarkStatusStyle, getStatusMessage, canRetry } from "../utils/bookmarkStatus";
 import { selectBookmarkById } from "../store/selectors/bookmarkSelectors";
+import { bookmarkActions } from "../store/slices/bookmarkSlice";
 
 export function Component() {
   const { bookmarkId } = useParams<{ bookmarkId: string }>();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const bookmark = useAppSelector((state) =>
     bookmarkId ? selectBookmarkById(state, bookmarkId) : undefined,
   );
   const statusStyle = getBookmarkStatusStyle(bookmark?.status || "done");
+  const statusMessage = getStatusMessage(bookmark || { status: "done" } as any);
 
   if (!bookmark) return null;
+
+async function handleRetry() {
+  if (!bookmark?.id) return;
+  try {
+    const processing = await retryEmbedding(bookmark.id, (final) =>
+      dispatch(bookmarkActions.updateBookmark(final)),
+    );
+    dispatch(bookmarkActions.updateBookmark(processing)); // banner shows "processing"
+  } catch (err) {
+    console.error(err); // e.g. already processing
+  }
+}
 
 
   return (
     <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {bookmark?.status !== "done" && (
         <div
-          className={`mb-4 text-sm flex items-center justify-between gap-4 rounded-xl p-4 ${statusStyle.bgColor} ${statusStyle.color}`}
+          className={`mb-4 text-sm flex items-center justify-between gap-4 rounded-xl p-4 ${statusStyle.bgColor} ${statusStyle.color} ${statusStyle.border}`}
         >
           <div className="flex min-w-0 items-center gap-2">
             <span
@@ -34,14 +51,15 @@ export function Component() {
             />
 
             <p className="min-w-0 flex-1 leading-relaxed line-clamp-2">
-              {statusStyle.details}
+              {statusMessage}
             </p>
           </div>
 
-          {bookmark.status === "failed" && (
+          {canRetry(bookmark) && (
             <button
               type="button"
               className="shrink-0 cursor-pointer text-primary transition-all duration-150 ease-in-out hover:underline"
+              onClick={handleRetry}
             >
               Retry
             </button>
@@ -49,6 +67,10 @@ export function Component() {
 
           {bookmark.status === "manual" && (
             <button
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/bookmarks/edit/${bookmark.id}`);
+              }}
               type="button"
               className="shrink-0 cursor-pointer transition-all duration-150 ease-in-out hover:underline"
             >

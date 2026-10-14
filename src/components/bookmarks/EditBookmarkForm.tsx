@@ -13,12 +13,13 @@ import Button from "../ui/Button";
 
 import { IoClose } from "react-icons/io5";
 import { CgSpinner } from "react-icons/cg";
-import { MdAdd, MdLink } from "react-icons/md";
+import { MdAdd, MdLink, MdErrorOutline } from "react-icons/md";
 import {
   LuFileText,
   LuLoaderCircle,
   LuCheck,
   LuAlignLeft,
+  LuInfo,
 } from "react-icons/lu";
 
 const buttontags: string[] = ["tag1", "tag2", "tag3", "tag4", "tag5"];
@@ -48,6 +49,10 @@ export default function EditBookmarkForm({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const hasSnippet = Boolean(snippet?.trim());
+  const hasNotes = Boolean(notes?.trim());
+  const hasContext = hasSnippet || hasNotes;
+
   const isLoading = false;
   const fetched = false;
   const previewTitle = "Example Website";
@@ -64,15 +69,15 @@ export default function EditBookmarkForm({
     notes !== initial.notes ||
     !sameTags;
 
-  // useEffect(() => {
-  //   if (bookmark.status === "processing") {
-  //     navigate(`/bookmarks/${bookmark.id}`, { replace: true });
-  //   }
-  // }, [bookmark.status, bookmark.id, navigate]);
+  useEffect(() => {
+    if (bookmark.status === "processing") {
+      navigate(`/bookmarks/${bookmark.id}`, { replace: true });
+    }
+  }, [bookmark.status, bookmark.id, navigate]);
 
   async function handleUpdateBookmark(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (isSubmitting || !bookmark.id) return;
+    if (isSubmitting || !bookmark.id || !hasContext) return;
 
     setIsSubmitting(true);
     setSubmitError(null);
@@ -174,7 +179,46 @@ export default function EditBookmarkForm({
             </button>
           </div>
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {/* {error && <p className="text-sm text-red-500">{error}</p>} */}
+
+          {submitError && (
+            <div
+              role="alert"
+              className="
+      mt-3 flex items-start gap-2.5
+      rounded-xl border border-red-500/20
+      bg-red-500/5 p-3
+      text-sm text-muted-foreground
+    "
+            >
+              <MdErrorOutline size={18} className="mt-0.5 shrink-0 text-red-500" />
+
+              <p className="leading-relaxed">
+                {submitError}
+              </p>
+            </div>
+          )}
+          {!hasContext && (
+            <div
+              role="alert"
+              className="
+      mt-3 flex items-start gap-2.5
+      rounded-xl border border-amber-500/20
+      bg-amber-500/5 p-3
+      text-sm text-muted-foreground
+    "
+            >
+              <LuInfo size={18} className="mt-0.5 shrink-0 text-amber-500" />
+
+              <p className="leading-relaxed">
+                <span className="font-semibold text-foreground">
+                  Summary or Notes required.
+                </span>{" "}
+                Please fill in at least one of these fields before updating your
+                bookmark.
+              </p>
+            </div>
+          )}
 
           <form onSubmit={handleUpdateBookmark} className="mt-4 space-y-4">
             <Input
@@ -265,11 +309,12 @@ export default function EditBookmarkForm({
               type="text"
               textarea
               rows={4}
-              label="Summary"
+              label={`Summary ${hasNotes ? "(optional)" : "(required)"}`}
               icon={LuAlignLeft}
               name="snippet"
               placeholder="A short description of what this link is about..."
               value={snippet}
+              required={!hasNotes}
               onChange={(e) => setSnippet(e.target.value)}
             />
 
@@ -278,7 +323,8 @@ export default function EditBookmarkForm({
               type="text"
               textarea
               rows={4}
-              label="Notes (optional)"
+              label={`Notes ${hasSnippet ? "(optional)" : "(required)"}`}
+              required={!hasSnippet}
               icon={LuFileText}
               name="notes"
               placeholder="Why are you using this? What do you want to remember?"
@@ -395,7 +441,7 @@ export default function EditBookmarkForm({
               </Button>
 
               <Button
-                disabled={!isUpdated || isSubmitting}
+                disabled={!isUpdated || isSubmitting || !hasContext}
                 type="submit"
                 variant="primary"
                 className="w-full"

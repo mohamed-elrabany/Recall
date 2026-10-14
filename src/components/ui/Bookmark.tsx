@@ -4,24 +4,43 @@ import { MdFavorite, MdOutlineCalendarToday } from "react-icons/md";
 
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
-import { getBookmarkStatusStyle } from "../../utils/bookmarkStatus";
+import { useAppDispatch } from "../../store/hooks";
+
+import { getBookmarkStatusStyle, canRetry } from "../../utils/bookmarkStatus";
+import { retryEmbedding } from "../../services/bookmarkServices";
+import { bookmarkActions } from "../../store/slices/bookmarkSlice";
 
 export default function Bookmark({ bookmark }: { bookmark: BookMark }) {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const statusStyle = getBookmarkStatusStyle(bookmark?.status);
+
+  async function handleRetry(e: React.MouseEvent<HTMLButtonElement>) {
+    e.stopPropagation();
+    if (!bookmark?.id) return;
+    try {
+      const processing = await retryEmbedding(bookmark.id, (final) =>
+        dispatch(bookmarkActions.updateBookmark(final)),
+      );
+      dispatch(bookmarkActions.updateBookmark(processing)); // banner shows "processing"
+    } catch (err) {
+      console.error(err); // e.g. already processing
+    }
+  }
+
+  
   return (
-    <motion.div
-      onClick={() => navigate(`/bookmarks/${bookmark?.id}`)}
-      whileHover={{ y: -2 }}
-      transition={{
-        type: "spring",
-        stiffness: 300,
-        damping: 20,
-        ease: "easeInOut",
-        duration: 0.15,
-      }}
-      className="space-y-2 p-4 rounded-2xl shadow-lg bg-card group cursor-pointer"
-    >
+<motion.div
+  onClick={() => navigate(`/bookmarks/${bookmark?.id}`)}
+  whileHover={{ y: -3 }}
+  whileTap={{ scale: 0.99 }}
+  transition={{
+    type: "tween",
+    duration: 0.2,
+    ease: [0.22, 1, 0.36, 1],
+  }}
+  className="space-y-2 p-4 rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-200 bg-card group cursor-pointer"
+>
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-start gap-2 min-w-0 flex-1">
           <span className="text-xs bg-muted p-2 rounded-lg w-10 h-10 flex items-center justify-center shrink-0">
@@ -84,10 +103,11 @@ export default function Bookmark({ bookmark }: { bookmark: BookMark }) {
             <p>{statusStyle.label}</p>
           </div>
 
-          {bookmark.status === "failed" && (
+          {canRetry(bookmark) && (
             <button
               type="button"
-              className="cursor-pointer text-primary transition-all duration-150 ease-in-out hover:underline"
+              onClick={(e) => handleRetry(e)}
+              className="cursor-pointer text-primary transition-all duration-150 ease-in-out hover:underline p-1"
             >
               Retry
             </button>
@@ -95,8 +115,12 @@ export default function Bookmark({ bookmark }: { bookmark: BookMark }) {
 
           {bookmark.status === "manual" && (
             <button
+            onClick={(e)=> {
+              e.stopPropagation();
+              navigate(`/bookmarks/edit/${bookmark.id}`)
+            }}
               type="button"
-              className="cursor-pointer text-primary transition-all duration-150 ease-in-out hover:underline"
+              className="cursor-pointer text-primary transition-all duration-150 ease-in-out hover:underline p-1"
             >
               Complete
             </button>

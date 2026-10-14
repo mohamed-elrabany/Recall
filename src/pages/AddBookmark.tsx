@@ -6,8 +6,9 @@ import { useTagManager } from "../hooks/useTagManager";
 import { useAppDispatch } from "../store/hooks";
 
 import { normalizeUrl, getFaviconUrl } from "../utils/url";
-import { addBookmark } from "../services/bookmarkServices";
+import { addBookmark, processNewBookmark } from "../services/bookmarkServices";
 import { bookmarkActions } from "../store/slices/bookmarkSlice";
+import { store } from "../store/store";
 
 import type { BookMark } from "../types/bookmark";
 
@@ -218,7 +219,12 @@ export function Component() {
               </div>
 
               {tags.map((tag, index) => (
-                <input key={tag + "-" + index} type="hidden" name="tags" value={tag} />
+                <input
+                  key={tag + "-" + index}
+                  type="hidden"
+                  name="tags"
+                  value={tag}
+                />
               ))}
 
               <div className="text-xs text-muted-foreground mt-2 flex items-center gap-2 flex-wrap">
@@ -292,8 +298,14 @@ export async function action({ request }: { request: Request }) {
       url: normalizedUrl,
       notes,
       tags,
-      status: "failed",
+      status: "processing",
     });
+
+    if (bookmark) {
+      processNewBookmark(bookmark, (final) => {
+        store.dispatch(bookmarkActions.updateBookmark(final));
+      });
+    }
 
     return { bookmark };
   } catch (error) {

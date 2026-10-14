@@ -55,10 +55,10 @@ async function finishEmbedding(
   const { data } = await supabase
     .from("bookmarks")
     .update(patch)
-    .eq("id", id)
-    .eq("status", "processing")
+    .eq("id", id) //find the bookmark by id
+    .eq("status", "processing") // Update he bookmark only if the status is still "processing"
     .select()
-    .maybeSingle();
+    .maybeSingle(); // returns one row or null if no match
 
   return data;
 }
@@ -67,8 +67,11 @@ async function finishEmbedding(
 async function embedBookmark(saved: BookMark): Promise<BookMark> {
   const text = buildEmbeddingText(saved);
 
+  const hasTitle = Boolean(saved.title?.trim());
+  const hasContext = Boolean(saved.snippet?.trim() || saved.notes?.trim());
+
   // Nothing to embed -> the user must fill in title/summary manually
-  if (!text) {
+  if (!hasTitle || !hasContext) {
     const manual = await finishEmbedding(saved.id!, {
       embedding: null,
       status: "manual",
@@ -78,7 +81,10 @@ async function embedBookmark(saved: BookMark): Promise<BookMark> {
 
   try {
     const embedding = await generateEmbedding(text);
-    const done = await finishEmbedding(saved.id!, { embedding, status: "done" });
+    const done = await finishEmbedding(saved.id!, {
+      embedding,
+      status: "done",
+    });
     return done ?? saved;
   } catch (err) {
     console.error("Embedding failed:", err);
@@ -121,6 +127,25 @@ export async function getBookmarkById(id: string): Promise<BookMark | null> {
 }
 
 /* ============================================================
+   Extract metadata (title + snippet) from a URL
+   ============================================================ */
+
+export async function processNewBookmark(
+  saved: BookMark,
+  onDone?: EmbeddingDoneCallback,
+) {
+  const { data, error } = await supabase.functions.invoke("extract-metadata", {
+    body: { id: saved.id },
+  });
+  const extracted: BookMark | undefined = data?.bookmark;
+
+  if (error || !extracted) return onDone?.({ ...saved, status: "manual" });
+  if (extracted.status === "manual") return onDone?.(extracted);
+
+  embedBookmark(extracted).then((final) => onDone?.(final));
+}
+
+/* ============================================================
    Create / Update / Delete
    ============================================================ */
 
@@ -143,9 +168,14 @@ export async function updateBookmark(
   bookmark: BookMark,
   onEmbeddingDone?: EmbeddingDoneCallback,
 ): Promise<BookMark> {
-  // Never send fields the client shouldn't overwrite
-  const { embedding, id: _id, user_id, created_at, ...fields } =
-    bookmark as any;
+  // Never send fields the client shouldn't overwrite or fields that shouldn't be updated by the user.
+  const {
+    embedding,
+    id: _id,
+    user_id,
+    created_at,
+    ...fields
+  } = bookmark as any;
 
   const staleBefore = new Date(Date.now() - STALE_PROCESSING_MS).toISOString();
 
@@ -171,6 +201,7 @@ export async function updateBookmark(
     );
   }
 
+  // starts the embedding in the background, but returns the saved row immediately
   // Fire and forget: the user gets the saved bookmark immediately
   embedBookmark(data).then((final) => onEmbeddingDone?.(final));
 
