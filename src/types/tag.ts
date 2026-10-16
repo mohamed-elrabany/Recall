@@ -1,6 +1,6 @@
-export type Tag={
-    id:string;
-    name:string;
-    user_id: string;
-    created_at: Date;
+export type Tag = {
+  id: string;
+  name: string;
+  user_id: string;
+  created_at: string;
 };

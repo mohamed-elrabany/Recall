@@ -1,18 +1,26 @@
-export type BookMark={
-    id?:string;
-    url:string;
-    title?:string | null;
+import type { Tag } from "./tag";
+
+export type BookMark = {
+    id?: string;
+    url: string;
+    title?: string | null;
     snippet?: string | null;
-    notes?:string | null;
+    notes?: string | null;
     icon?: string;
     embedding?: number[];
-    is_favorite?:boolean;
-    tags?:string[] | null;
-    status:"processing" | "done" | "manual" | "failed";
+    is_favorite?: boolean;
+    tags?: Tag[] | null;
+    status: "processing" | "done" | "manual" | "failed";
     created_at?: string;
     updated_at?: string;
     user_id?: string;
-}
+};
+
+export type BookmarkInput = Omit<Partial<BookMark>, "tags"> & {
+  url: string;
+  status: BookMark["status"];
+  tags?: string[] | null;
+};
 
 export const bookmarks: BookMark[] = [
   {
@@ -20,7 +28,7 @@ export const bookmarks: BookMark[] = [
     title: "React Documentation",
     snippet: "Official React docs for hooks, components, and best practices.",
     url: "https://react.dev",
-    tags: ["react", "docs", "frontend"],
+    tags: null,
     created_at: "2026-01-15T00:00:00.000Z",
     updated_at: "2026-01-15T00:00:00.000Z",
     notes: "Check the new compiler section again.",
@@ -34,7 +42,7 @@ export const bookmarks: BookMark[] = [
     title: "",
     snippet: "",
     url: "https://www.typescriptlang.org/docs/handbook/intro.html",
-    tags: ["typescript", "docs"],
+    tags: null,
     created_at: "2026-02-03T00:00:00.000Z",
     updated_at: "2026-02-10T00:00:00.000Z",
     notes: "",
@@ -48,7 +56,7 @@ export const bookmarks: BookMark[] = [
     title: "",
     snippet: "",
     url: "https://reactrouter.com",
-    tags: ["react", "routing"],
+    tags: null,
     created_at: "2026-03-21T00:00:00.000Z",
     updated_at: "2026-03-25T00:00:00.000Z",
     notes: "Review nested routes and loaders.",
@@ -62,7 +70,7 @@ export const bookmarks: BookMark[] = [
     title: "",
     snippet: "",
     url: "https://tailwindcss.com/docs",
-    tags: ["css", "tailwind", "frontend"],
+    tags: null,
     created_at: "2026-04-11T00:00:00.000Z",
     updated_at: "2026-04-11T00:00:00.000Z",
     notes: "Look into container queries support.",
@@ -76,7 +84,7 @@ export const bookmarks: BookMark[] = [
     title: "MDN Web Docs",
     snippet: "Reference for HTML, CSS, and JavaScript.",
     url: "https://developer.mozilla.org",
-    tags: ["reference", "javascript", "css", "html"],
+    tags: null,
     created_at: "2026-05-02T00:00:00.000Z",
     updated_at: "2026-05-02T00:00:00.000Z",
     notes: "",

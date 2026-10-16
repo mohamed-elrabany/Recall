@@ -1,5 +1,10 @@
 import { supabase } from "../lib/supabaseClient";
-import type { BookMark } from "../types/bookmark";
+import type { BookMark, BookmarkInput } from "../types/bookmark";
+import type { Tag } from "../types/tag";
+
+type BookmarkTagRelation = {
+  tag: Tag | null;
+};
 
 // A bookmark stuck in "processing" longer than this is treated as dead
 // and can be edited or retried again.
@@ -7,12 +12,18 @@ const STALE_PROCESSING_MS = 2 * 60 * 1000;
 
 type EmbeddingDoneCallback = (bookmark: BookMark) => void;
 
+function getTagNames(tags: BookMark["tags"]): string[] {
+  return (tags ?? []).map((tag) => (typeof tag === "string" ? tag : tag.name));
+}
+
 /* ============================================================
    Embedding helpers (internal, not exported)
    ============================================================ */
 
 function buildEmbeddingText(bookmark: BookMark): string {
-  const tags = bookmark.tags ?? [];
+  const tags = (bookmark.tags ?? []).map((tag) =>
+    typeof tag === "string" ? tag : tag.name,
+  );
 
   return [
     bookmark.title,
@@ -20,7 +31,7 @@ function buildEmbeddingText(bookmark: BookMark): string {
     bookmark.notes,
     tags.length ? `Tags: ${tags.join(", ")}` : "",
   ]
-    .map((s) => s?.trim())
+    .map((text) => text?.trim())
     .filter(Boolean)
     .join("\n");
 }
@@ -106,24 +117,64 @@ export async function fetchBookmarks(): Promise<BookMark[]> {
 
   const { data, error } = await supabase
     .from("bookmarks")
-    .select("*")
+    .select(
+      `
+      *,
+      tags:bookmark_tags (
+        tag:tags (
+          id,
+          name,
+          user_id,
+          created_at
+        )
+      )
+    `,
+    )
     .eq("user_id", user.id);
 
   if (error) throw new Error(error.message);
 
-  return data ?? [];
+  return (data ?? []).map((bookmark) => {
+    const relations = (bookmark.tags ?? []) as unknown as BookmarkTagRelation[];
+
+    return {
+      ...bookmark,
+      tags: relations
+        .map((relation) => relation.tag)
+        .filter((tag): tag is Tag => tag !== null),
+    };
+  }) as BookMark[];
 }
 
 export async function getBookmarkById(id: string): Promise<BookMark | null> {
   const { data, error } = await supabase
     .from("bookmarks")
-    .select("*")
+    .select(
+      `
+      *,
+      tags:bookmark_tags (
+        tag:tags (
+          id,
+          name,
+          user_id,
+          created_at
+        )
+      )
+    `,
+    )
     .eq("id", id)
     .single();
 
   if (error) throw new Error(error.message);
 
-  return data;
+  const relations = (data.tags ?? []) as unknown as BookmarkTagRelation[];
+
+  return {
+    ...data,
+    tags: relations
+      .map((relation) => relation.tag)
+      .filter((tag): tag is Tag => tag !== null),
+  } as BookMark;
 }
 
 /* ============================================================
@@ -150,17 +201,24 @@ export async function processNewBookmark(
    ============================================================ */
 
 export async function addBookmark(
-  bookmark: BookMark,
+  bookmark: BookmarkInput,
 ): Promise<BookMark | null> {
-  const { data, error } = await supabase
-    .from("bookmarks")
-    .insert(bookmark)
-    .select()
-    .single();
+  const { data, error } = await supabase.rpc("save_bookmark_with_tags", {
+    p_bookmark: {
+      url: bookmark.url,
+      title: bookmark.title,
+      snippet: bookmark.snippet,
+      notes: bookmark.notes,
+      icon: bookmark.icon,
+      is_favorite: bookmark.is_favorite,
+    },
+    p_tag_names: bookmark.tags ?? [],
+    p_bookmark_id: null,
+  });
 
   if (error) throw new Error(error.message);
 
-  return data;
+  return data as unknown as BookMark;
 }
 
 export async function updateBookmark(
@@ -168,44 +226,37 @@ export async function updateBookmark(
   bookmark: BookMark,
   onEmbeddingDone?: EmbeddingDoneCallback,
 ): Promise<BookMark> {
-  // Never send fields the client shouldn't overwrite or fields that shouldn't be updated by the user.
+  // Keep tags separate from the other bookmark fields.
   const {
     embedding,
     id: _id,
     user_id,
     created_at,
+    updated_at,
+    status,
+    tags = [],
     ...fields
-  } = bookmark as any;
+  } = bookmark;
 
-  const staleBefore = new Date(Date.now() - STALE_PROCESSING_MS).toISOString();
-
-  const { data, error } = await supabase
-    .from("bookmarks")
-    .update({
-      ...fields,
-      status: "processing",
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", id)
-    // allowed only if NOT processing, or processing for too long (stuck)
-    .or(`status.neq.processing,updated_at.lt.${staleBefore}`)
-    .select()
-    .maybeSingle();
+  const { data, error } = await supabase.rpc("save_bookmark_with_tags", {
+    p_bookmark: fields,
+    p_tag_names: getTagNames(tags),
+    p_bookmark_id: id,
+  });
 
   if (error) throw new Error(error.message);
 
-  // No row matched -> it's currently processing
   if (!data) {
-    throw new Error(
-      "This bookmark is still being processed. Try again in a moment.",
-    );
+    throw new Error("Failed to update bookmark.");
   }
 
-  // starts the embedding in the background, but returns the saved row immediately
-  // Fire and forget: the user gets the saved bookmark immediately
-  embedBookmark(data).then((final) => onEmbeddingDone?.(final));
+  // The RPC has saved the bookmark and synchronized its tags.
+  // Start embedding only after that operation succeeds.
+  const saved = data as unknown as BookMark;
 
-  return data;
+  embedBookmark(saved).then((final) => onEmbeddingDone?.(final));
+
+  return saved;
 }
 
 export async function deleteBookmark(id: string): Promise<void> {

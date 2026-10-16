@@ -137,11 +137,11 @@ async function handleRetry() {
           <div className="flex items-center gap-2 flex-wrap mt-4">
             {bookmark.tags.map((tag) => (
               <span
-                key={tag}
+                key={tag.id}
                 className="text-sm bg-primary/10 text-primary px-2 py-1 font-medium rounded-full"
               >
                 <FiTag className="w-3 h-3 inline-block mr-1" />
-                {tag}
+                {tag.name}
               </span>
             ))}
           </div>
