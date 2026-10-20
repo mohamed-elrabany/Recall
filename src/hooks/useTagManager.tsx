@@ -1,9 +1,9 @@
 
 import { useMemo, useState } from "react";
 import { useAppSelector } from "../store/hooks";
-import { getTagNames } from "../utils/tagsNames";
+import { selectTagsWithFrequency } from "../store/selectors/tagSelector";
 
-const DEFAULT_TAGS: string[] = [
+const DEFAULT_TAGS = [
   "Programming",
   "Learning",
   "Technology",
@@ -13,7 +13,6 @@ const DEFAULT_TAGS: string[] = [
 
 const RECOMMENDATION_LIMIT = 5;
 
-// Normalize names for duplicate checking without changing their display.
 function normalizeTag(tag: string): string {
   return tag.trim().toLowerCase();
 }
@@ -39,22 +38,19 @@ export const useTagManager = (initialTags: string[] = []) => {
     getUniqueTags(initialTags),
   );
 
-  // Get saved tags from Redux and convert them into strings.
-  const userTags = useAppSelector((state) => state.tags);
+  // Already sorted by frequency: most-used tags first.
+  const tagsWithFrequency = useAppSelector(selectTagsWithFrequency);
 
-  const savedTagNames = useMemo(
-    () => getTagNames(userTags),
-    [userTags],
-  );
+  const availableTagPool = useMemo(() => {
+    const savedTagNames = tagsWithFrequency.map(
+      ({ tag }) => tag.name,
+    );
 
-  // Combine saved tags and defaults, removing duplicates.
-  const availableTagPool = useMemo(
-    () => getUniqueTags([...savedTagNames, ...DEFAULT_TAGS]),
-    [savedTagNames],
-  );
+    // Saved tags keep their frequency order.
+    // Defaults fill the remaining recommendation slots.
+    return getUniqueTags([...savedTagNames, ...DEFAULT_TAGS]);
+  }, [tagsWithFrequency]);
 
-  // Recommendations exclude tags that are already selected.
-  // Keep the list filled to five when enough candidates are available.
   const recommendedTags = useMemo(() => {
     const selectedNames = new Set(tags.map(normalizeTag));
 
@@ -78,7 +74,6 @@ export const useTagManager = (initialTags: string[] = []) => {
   }
 
   function selectRecommendedTag(tag: string) {
-    // Use the same logic as manually adding a tag.
     commitTag(tag);
   }
 

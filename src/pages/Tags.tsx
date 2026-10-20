@@ -21,15 +21,19 @@ export function Component() {
     <div className="px-4 sm:px-6 pt-6 min-h-screen space-y-8">
       <div className="flex flex-col items-start justify-y-start gap-4">
         {activeTag ? (
-          <div className="flex items-center gap-2">
-            <button onClick={() => setActiveTag(null)} className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1">
-              Tags /
-            </button>
-                    
-            <h2 className="text-xl font-bold text-foreground" style={{ fontFamily: "Manrope, sans-serif" }}>
-              #{activeTag.name}
-            </h2>
+          <div className="flex justify-between items-center gap-2 w-full">
+              <div className="flex items-center gap-2">
+              <button onClick={() => setActiveTag(null)} className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1">
+                Tags /
+              </button>
+                      
+              <h2 className="text-xl font-bold text-foreground" style={{ fontFamily: "Manrope, sans-serif" }}>
+                #{activeTag.name}
+              </h2>
+            </div>
+            <p>{bookmarks.length} {bookmarks.length === 1 ? "item" : "items"}</p>
           </div>
+          
 
         ) : (
           <h2 className="text-2xl font-bold text-foreground">Browse by Tags</h2>
