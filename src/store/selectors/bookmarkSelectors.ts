@@ -1,4 +1,5 @@
 import type { RootState } from "../store";
+import type { Tag } from "../../types/tag";
 
 export const selectBookmarkById = (
   state: RootState,
@@ -7,12 +8,14 @@ export const selectBookmarkById = (
 
 export const selectBookmarksByTag = (
   state: RootState,
-  tag: string | null,
+  tag: Tag | null,
 ) => {
-  return state.bookmarks.filter((bookmark) =>
-    bookmark.tags?.includes(tag!)
+  return state.bookmarks.filter((bookmark) => tag !== null &&
+    bookmark.tags?.includes(tag)
   );
 };
 
 export const selectFavoriteBookmarks = (state: RootState) =>
   state.bookmarks.filter((bookmark) => bookmark.is_favorite);
+
+// Edited Tag type
