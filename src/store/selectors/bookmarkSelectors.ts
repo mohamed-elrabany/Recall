@@ -8,10 +8,15 @@ export const selectBookmarkById = (
 
 export const selectBookmarksByTag = (
   state: RootState,
-  tag: Tag | null,
+  selectedTag: Tag | null,
 ) => {
-  return state.bookmarks.filter((bookmark) => tag !== null &&
-    bookmark.tags?.includes(tag)
+  if (!selectedTag) return state.bookmarks;
+
+  return state.bookmarks.filter((bookmark) =>
+    (bookmark.tags ?? []).some(
+      (tag) =>
+        typeof tag !== "string" && tag.id === selectedTag.id,
+    ),
   );
 };
 
