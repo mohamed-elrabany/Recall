@@ -1,30 +1,103 @@
-import { useState } from "react";
+
+import { useMemo, useState } from "react";
+import { useAppSelector } from "../store/hooks";
+import { getTagNames } from "../utils/tagsNames";
+
+const DEFAULT_TAGS: string[] = [
+  "Programming",
+  "Learning",
+  "Technology",
+  "Research",
+  "Ideas",
+];
+
+const RECOMMENDATION_LIMIT = 5;
+
+// Normalize names for duplicate checking without changing their display.
+function normalizeTag(tag: string): string {
+  return tag.trim().toLowerCase();
+}
+
+function getUniqueTags(tagNames: string[]): string[] {
+  const seen = new Set<string>();
+
+  return tagNames.reduce<string[]>((uniqueTags, tag) => {
+    const trimmedTag = tag.trim();
+    const normalizedTag = normalizeTag(trimmedTag);
+
+    if (normalizedTag && !seen.has(normalizedTag)) {
+      seen.add(normalizedTag);
+      uniqueTags.push(trimmedTag);
+    }
+
+    return uniqueTags;
+  }, []);
+}
 
 export const useTagManager = (initialTags: string[] = []) => {
-  const [tags, setTags] = useState<string[]>(initialTags);
+  const [tags, setTags] = useState<string[]>(() =>
+    getUniqueTags(initialTags),
+  );
+
+  // Get saved tags from Redux and convert them into strings.
+  const userTags = useAppSelector((state) => state.tags);
+
+  const savedTagNames = useMemo(
+    () => getTagNames(userTags),
+    [userTags],
+  );
+
+  // Combine saved tags and defaults, removing duplicates.
+  const availableTagPool = useMemo(
+    () => getUniqueTags([...savedTagNames, ...DEFAULT_TAGS]),
+    [savedTagNames],
+  );
+
+  // Recommendations exclude tags that are already selected.
+  // Keep the list filled to five when enough candidates are available.
+  const recommendedTags = useMemo(() => {
+    const selectedNames = new Set(tags.map(normalizeTag));
+
+    return availableTagPool
+      .filter((tag) => !selectedNames.has(normalizeTag(tag)))
+      .slice(0, RECOMMENDATION_LIMIT);
+  }, [availableTagPool, tags]);
+
+  function commitTag(tagInput: string) {
+    const newTag = tagInput.trim().replace(/,$/, "").trim();
+
+    if (!newTag) return;
+
+    setTags((prevTags) => {
+      const alreadySelected = prevTags.some(
+        (tag) => normalizeTag(tag) === normalizeTag(newTag),
+      );
+
+      return alreadySelected ? prevTags : [...prevTags, newTag];
+    });
+  }
+
+  function selectRecommendedTag(tag: string) {
+    // Use the same logic as manually adding a tag.
+    commitTag(tag);
+  }
 
   function updateTagInput(e: React.ChangeEvent<HTMLInputElement>) {
-    //logic for updating the tag input
-    const inputValue: string = e.target.value;
+    const inputValue = e.target.value;
+
     if (inputValue.endsWith(",")) {
       commitTag(inputValue);
       e.target.value = "";
     }
   }
 
-  function commitTag(tagInput: string) {
-    // Logic for committing the tag
-    const newTag: string = tagInput.trim().replace(/,$/, "");
-    if (newTag) {
-      setTags((prevTags) =>
-        prevTags.includes(newTag) ? prevTags : [...prevTags, newTag],
-      );
-    }
-  }
-
   function handleTagRemove(tagToRemove: string | null) {
     if (tagToRemove) {
-      setTags((prevTags) => prevTags.filter((tag) => tag !== tagToRemove));
+      setTags((prevTags) =>
+        prevTags.filter(
+          (tag) => normalizeTag(tag) !== normalizeTag(tagToRemove),
+        ),
+      );
     } else {
       setTags((prevTags) => prevTags.slice(0, -1));
     }
@@ -44,5 +117,13 @@ export const useTagManager = (initialTags: string[] = []) => {
     }
   }
 
-  return { tags, updateTagInput, commitTag, handleTagRemove, handleTagKeyDown };
+  return {
+    tags,
+    recommendedTags,
+    updateTagInput,
+    commitTag,
+    selectRecommendedTag,
+    handleTagRemove,
+    handleTagKeyDown,
+  };
 };

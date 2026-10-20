@@ -39,7 +39,7 @@ export default function EditBookmarkForm({
 
   const isMobile = useMediaQuery("(max-width: 768px)");
 
-  const { tags, updateTagInput, commitTag, handleTagRemove, handleTagKeyDown } =
+  const { tags, recommendedTags, updateTagInput, commitTag, handleTagRemove, handleTagKeyDown } =
     useTagManager(getTagNames(bookmark.tags));
 
   const [url, setUrl] = useState(bookmark.url || "");
@@ -408,7 +408,7 @@ export default function EditBookmarkForm({
                   gap-2 flex-wrap
                 "
               >
-                {buttontags.map((tag) => (
+                {recommendedTags.map((tag) => (
                   <button
                     key={tag}
                     type="button"

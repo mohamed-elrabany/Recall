@@ -32,7 +32,7 @@ export function Component() {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
   const isMobile: boolean = useMediaQuery("(max-width: 768px)");
-  const { tags, updateTagInput, commitTag, handleTagRemove, handleTagKeyDown } =
+  const { tags, recommendedTags, updateTagInput, commitTag, handleTagRemove, handleTagKeyDown } =
     useTagManager();
 
   const [url, setUrl] = useState("");
@@ -228,7 +228,7 @@ export function Component() {
               ))}
 
               <div className="text-xs text-muted-foreground mt-2 flex items-center gap-2 flex-wrap">
-                {buttontags.map((tag) => (
+                {recommendedTags.map((tag) => (
                   <button
                     key={tag}
                     type="button"
