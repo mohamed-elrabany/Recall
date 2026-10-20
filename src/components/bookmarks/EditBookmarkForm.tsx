@@ -4,9 +4,10 @@ import { updateBookmark as updateBookmarkService } from "../../services/bookmark
 import { useNavigate } from "react-router";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 import { useTagManager } from "../../hooks/useTagManager";
-import type { BookMark } from "../../types/bookmark";
+import type { BookMark, BookmarkInput } from "../../types/bookmark";
 import { useAppDispatch } from "../../store/hooks";
 import { bookmarkActions } from "../../store/slices/bookmarkSlice";
+import { getTagNames } from "../../utils/tagsNames";
 
 import Input from "../ui/Input";
 import Button from "../ui/Button";
@@ -39,7 +40,7 @@ export default function EditBookmarkForm({
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   const { tags, updateTagInput, commitTag, handleTagRemove, handleTagKeyDown } =
-    useTagManager(bookmark.tags || []);
+    useTagManager(getTagNames(bookmark.tags));
 
   const [url, setUrl] = useState(bookmark.url || "");
   const [title, setTitle] = useState(bookmark.title || "");
@@ -58,9 +59,10 @@ export default function EditBookmarkForm({
   const previewTitle = "Example Website";
   const previewDomain = "example.com";
 
+  const initialTagNames = getTagNames(initial.tags);
   const sameTags =
-    tags.length === (initial.tags?.length ?? 0) &&
-    tags.every((tag) => initial.tags?.includes(tag));
+    tags.length === initialTagNames.length &&
+    tags.every((tag) => initialTagNames.includes(tag));
 
   const isUpdated =
     url !== initial.url ||
@@ -83,7 +85,7 @@ export default function EditBookmarkForm({
     setSubmitError(null);
 
     try {
-      const updatedBookmark: BookMark = {
+      const updatedBookmark: BookmarkInput = {
         ...bookmark,
         url,
         title: title || null,
@@ -191,11 +193,12 @@ export default function EditBookmarkForm({
       text-sm text-muted-foreground
     "
             >
-              <MdErrorOutline size={18} className="mt-0.5 shrink-0 text-red-500" />
+              <MdErrorOutline
+                size={18}
+                className="mt-0.5 shrink-0 text-red-500"
+              />
 
-              <p className="leading-relaxed">
-                {submitError}
-              </p>
+              <p className="leading-relaxed">{submitError}</p>
             </div>
           )}
           {!hasContext && (

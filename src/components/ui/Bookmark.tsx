@@ -76,10 +76,10 @@ export default function Bookmark({ bookmark }: { bookmark: BookMark }) {
         <div className="flex items-center gap-1 flex-wrap">
           {bookmark?.tags?.slice(0, 2).map((tag) => (
             <span
-              key={tag?.id}
+              key={tag.id}
               className="text-[10px] bg-primary/10 text-primary px-2 py-1 font-medium rounded-full"
             >
-              {tag?.name}
+              {tag.name}
             </span>
           ))}
         </div>

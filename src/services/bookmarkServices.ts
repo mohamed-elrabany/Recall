@@ -12,18 +12,16 @@ const STALE_PROCESSING_MS = 2 * 60 * 1000;
 
 type EmbeddingDoneCallback = (bookmark: BookMark) => void;
 
-function getTagNames(tags: BookMark["tags"]): string[] {
-  return (tags ?? []).map((tag) => (typeof tag === "string" ? tag : tag.name));
-}
+// function getTagNames(tags: BookMark["tags"]): string[] {
+//   return (tags ?? []).map((tag) => (typeof tag === "string" ? tag : tag.name));
+// }
 
 /* ============================================================
    Embedding helpers (internal, not exported)
    ============================================================ */
 
 function buildEmbeddingText(bookmark: BookMark): string {
-  const tags = (bookmark.tags ?? []).map((tag) =>
-    typeof tag === "string" ? tag : tag.name,
-  );
+  const tags = (bookmark.tags ?? []).map((tag) => tag.name);
 
   return [
     bookmark.title,
@@ -59,20 +57,46 @@ async function generateEmbedding(text: string): Promise<number[]> {
 
 // Writes the final result, but only while the row is still "processing",
 // so a late or stale result can't overwrite newer data. Never throws.
+
 async function finishEmbedding(
   id: string,
   patch: Record<string, unknown>,
 ): Promise<BookMark | null> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("bookmarks")
     .update(patch)
-    .eq("id", id) //find the bookmark by id
-    .eq("status", "processing") // Update he bookmark only if the status is still "processing"
-    .select()
-    .maybeSingle(); // returns one row or null if no match
+    .eq("id", id)
+    .eq("status", "processing")
+    .select(`
+      *,
+      tags:bookmark_tags (
+        tag:tags (
+          id,
+          name,
+          user_id,
+          created_at
+        )
+      )
+    `)
+    .maybeSingle();
 
-  return data;
+  if (error) {
+    console.error("Failed to finish embedding:", error);
+    return null;
+  }
+
+  if (!data) return null;
+
+  const relations = (data.tags ?? []) as unknown as BookmarkTagRelation[];
+
+  return {
+    ...data,
+    tags: relations
+      .map((relation) => relation.tag)
+      .filter((tag): tag is Tag => tag !== null),
+  } as BookMark;
 }
+
 
 // Runs in the background. Never throws. Returns the final row.
 async function embedBookmark(saved: BookMark): Promise<BookMark> {
@@ -134,6 +158,8 @@ export async function fetchBookmarks(): Promise<BookMark[]> {
 
   if (error) throw new Error(error.message);
 
+  console.log("Fetched bookmarks:", data);
+
   return (data ?? []).map((bookmark) => {
     const relations = (bookmark.tags ?? []) as unknown as BookmarkTagRelation[];
 
@@ -169,6 +195,8 @@ export async function getBookmarkById(id: string): Promise<BookMark | null> {
 
   const relations = (data.tags ?? []) as unknown as BookmarkTagRelation[];
 
+  console.log("Fetched bookmark by ID:", data);
+
   return {
     ...data,
     tags: relations
@@ -181,19 +209,40 @@ export async function getBookmarkById(id: string): Promise<BookMark | null> {
    Extract metadata (title + snippet) from a URL
    ============================================================ */
 
+
 export async function processNewBookmark(
   saved: BookMark,
   onDone?: EmbeddingDoneCallback,
 ) {
-  const { data, error } = await supabase.functions.invoke("extract-metadata", {
-    body: { id: saved.id },
-  });
+  const { data, error } = await supabase.functions.invoke(
+    "extract-metadata",
+    {
+      body: { id: saved.id },
+    },
+  );
+
   const extracted: BookMark | undefined = data?.bookmark;
 
-  if (error || !extracted) return onDone?.({ ...saved, status: "manual" });
-  if (extracted.status === "manual") return onDone?.(extracted);
+  if (error || !extracted) {
+    return onDone?.({
+      ...saved,
+      status: "manual",
+    });
+  }
 
-  embedBookmark(extracted).then((final) => onDone?.(final));
+  // Preserve the tags from the initially saved bookmark.
+  const bookmarkWithTags: BookMark = {
+    ...saved,
+    ...extracted,
+    tags: saved.tags,
+  };
+
+  if (bookmarkWithTags.status === "manual") {
+    return onDone?.(bookmarkWithTags);
+  }
+
+  const final = await embedBookmark(bookmarkWithTags);
+  onDone?.(final);
 }
 
 /* ============================================================
@@ -218,12 +267,14 @@ export async function addBookmark(
 
   if (error) throw new Error(error.message);
 
+  console.log("Added bookmark:", data);
+
   return data as unknown as BookMark;
 }
 
 export async function updateBookmark(
   id: string,
-  bookmark: BookMark,
+  bookmark: BookmarkInput,
   onEmbeddingDone?: EmbeddingDoneCallback,
 ): Promise<BookMark> {
   // Keep tags separate from the other bookmark fields.
@@ -240,7 +291,7 @@ export async function updateBookmark(
 
   const { data, error } = await supabase.rpc("save_bookmark_with_tags", {
     p_bookmark: fields,
-    p_tag_names: getTagNames(tags),
+    p_tag_names: tags,
     p_bookmark_id: id,
   });
 
@@ -249,6 +300,8 @@ export async function updateBookmark(
   if (!data) {
     throw new Error("Failed to update bookmark.");
   }
+
+  console.log("Updated bookmark:", data);
 
   // The RPC has saved the bookmark and synchronized its tags.
   // Start embedding only after that operation succeeds.
@@ -286,28 +339,52 @@ export async function toggleBookmarkFavorite(id: string, isFavorite: boolean) {
    Retry (failed / manual)
    ============================================================ */
 
+
 export async function retryEmbedding(
   id: string,
   onEmbeddingDone?: EmbeddingDoneCallback,
 ): Promise<BookMark> {
-  const staleBefore = new Date(Date.now() - STALE_PROCESSING_MS).toISOString();
+  const staleBefore = new Date(
+    Date.now() - STALE_PROCESSING_MS,
+  ).toISOString();
 
-  // Claim the row atomically: set "processing" only if it isn't already
+  // Claim the bookmark only if it isn't already being processed,
+  // or its processing state is stale.
   const { data, error } = await supabase
     .from("bookmarks")
-    .update({ status: "processing", updated_at: new Date().toISOString() })
+    .update({
+      status: "processing",
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", id)
     .or(`status.neq.processing,updated_at.lt.${staleBefore}`)
-    .select()
+    .select("id")
     .maybeSingle();
 
   if (error) throw new Error(error.message);
-  if (!data) throw new Error("This bookmark is already being processed.");
 
-  embedBookmark(data).then((final) => onEmbeddingDone?.(final));
+  if (!data) {
+    throw new Error("This bookmark is already being processed.");
+  }
 
-  return data;
+  // Fetch the complete bookmark, including its related tags.
+  const saved = await getBookmarkById(id);
+
+  if (!saved) {
+    throw new Error("Failed to fetch the bookmark for embedding.");
+  }
+
+  // Run embedding in the background.
+  embedBookmark(saved)
+    .then((final) => onEmbeddingDone?.(final))
+    .catch((error) => {
+      console.error("Retry embedding failed:", error);
+    });
+
+  // Return the bookmark with its tags immediately.
+  return saved;
 }
+
 
 /* ============================================================
    WHAT EACH FUNCTION DOES

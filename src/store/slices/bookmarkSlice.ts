@@ -17,7 +17,7 @@ const bookmarkSlice = createSlice({
         (bookmark) => bookmark.id === action.payload.id,
       );
       if (!exists) {
-        state.unshift(action.payload);
+        state.push(action.payload);
       }
     },
 
