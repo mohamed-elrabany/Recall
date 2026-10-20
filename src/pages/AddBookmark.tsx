@@ -20,7 +20,6 @@ import { CgSpinner } from "react-icons/cg";
 import { MdAdd, MdLink } from "react-icons/md";
 import { LuFileText, LuLoaderCircle, LuCheck } from "react-icons/lu";
 
-const buttontags: string[] = ["tag1", "tag2", "tag3", "tag4", "tag5"];
 
 export function Component() {
   const navigate = useNavigate();

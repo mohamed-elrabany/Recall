@@ -23,7 +23,6 @@ import {
   LuInfo,
 } from "react-icons/lu";
 
-const buttontags: string[] = ["tag1", "tag2", "tag3", "tag4", "tag5"];
 
 export default function EditBookmarkForm({
   bookmark,
