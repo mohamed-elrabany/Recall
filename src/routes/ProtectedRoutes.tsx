@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import type { Location } from "react-router";
 
 import { useAppSelector } from "../store/hooks";
+import { SemanticSearchProvider } from "../context/SemanticSearchContext";
 import lazyPage from "../utils/lazyPage";
 
 import Topbar from "../components/layout/Topbar";
@@ -22,15 +23,10 @@ const DashboardPage = lazyPage(() => import("../pages/Dashboard"));
 const FavoritesPage = lazyPage(() => import("../pages/Favorites"));
 const TagsPage = lazyPage(() => import("../pages/Tags"));
 const SettingsPage = lazyPage(() => import("../pages/Settings"));
-const BookmarkDetailsPage = lazyPage(
-  () => import("../pages/BookmarkDetails")
-);
+const BookmarkDetailsPage = lazyPage(() => import("../pages/BookmarkDetails"));
 
 export default function ProtectedRoutes() {
-
-  const { isLoading, isAuthenticated } = useAppSelector(
-    (state) => state.auth
-  );
+  const { isLoading, isAuthenticated } = useAppSelector((state) => state.auth);
 
   const location = useLocation();
   const matches = useMatches();
@@ -49,70 +45,59 @@ export default function ProtectedRoutes() {
       }
     | undefined;
 
-
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-
   useEffect(() => {
-    document.body.style.overflow = backgroundLocation
-      ? "hidden"
-      : "auto";
+    document.body.style.overflow = backgroundLocation ? "hidden" : "auto";
 
     return () => {
       document.body.style.overflow = "auto";
     };
   }, [backgroundLocation]);
 
-
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
   if (!isAuthenticated) {
-    return (
-      <Navigate
-        to="/login"
-        state={{ from: location }}
-        replace
-      />
-    );
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
-
 
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
 
       <main className="flex-1 pb-20 md:pb-0">
-{handle?.topbar === "bookmark" ? (
-  <BookmarkDetailsNav id={bookmarkId} />
-) : handle?.topbar === "back" ? (
-  <BackNav title={handle.title} />
-) : handle?.topbar === "none" ? null : (
-  <Topbar />
-)}
+        <SemanticSearchProvider>
+          {handle?.topbar === "bookmark" ? (
+            <BookmarkDetailsNav id={bookmarkId} />
+          ) : handle?.topbar === "back" ? (
+            <BackNav title={handle.title} />
+          ) : handle?.topbar === "none" ? null : (
+            <Topbar />
+          )}
 
-        {/* Normal protected page OR background page behind modal */}
-        {backgroundLocation ? (
-          <Routes location={backgroundLocation}>
-            <Route path="dashboard" element={<DashboardPage />} />
-            <Route path="favorites" element={<FavoritesPage />} />
-            <Route path="tags" element={<TagsPage />} />
-            <Route path="settings" element={<SettingsPage />} />
-            <Route
-              path="bookmarks/:bookmarkId"
-              element={<BookmarkDetailsPage />}
-            />
-          </Routes>
-        ) : (
-          <Outlet />
-        )}
+          {/* Normal protected page or background page behind modal */}
+          {backgroundLocation ? (
+            <Routes location={backgroundLocation}>
+              <Route path="dashboard" element={<DashboardPage />} />
+              <Route path="favorites" element={<FavoritesPage />} />
+              <Route path="tags" element={<TagsPage />} />
+              <Route path="settings" element={<SettingsPage />} />
+              <Route
+                path="bookmarks/:bookmarkId"
+                element={<BookmarkDetailsPage />}
+              />
+            </Routes>
+          ) : (
+            <Outlet />
+          )}
+        </SemanticSearchProvider>
       </main>
 
       <BottomNav />
-
 
       {backgroundLocation && <Outlet />}
     </div>

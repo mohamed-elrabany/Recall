@@ -14,6 +14,10 @@ export default function Bookmark({ bookmark }: { bookmark: BookMark }) {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const statusStyle = getBookmarkStatusStyle(bookmark?.status);
+  const matchPercentage =
+    bookmark.similarity != null
+        ? Math.round(bookmark.similarity * 100)
+        : null;
 
   async function handleRetry(e: React.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation();
@@ -65,9 +69,18 @@ export default function Bookmark({ bookmark }: { bookmark: BookMark }) {
           </div>
         </div>
 
+        <div className="flex items-center gap-1">
+          {matchPercentage !== null && (
+            <span className="text-[10px] bg-primary/10 text-primary px-2 py-1 font-medium rounded-full">
+              {matchPercentage}%
+            </span>
+          )}
+
         {bookmark?.is_favorite && (
           <MdFavorite className="text-primary w-4 h-4 shrink-0" />
         )}
+        </div>
+
       </div>
       <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2 mb-3">
         {bookmark?.snippet || "No summary yet"}

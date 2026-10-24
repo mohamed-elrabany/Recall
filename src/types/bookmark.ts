@@ -14,6 +14,7 @@ export type BookMark = {
     created_at?: string;
     updated_at?: string;
     user_id?: string;
+    similarity?: number;
 };
 
 export type BookmarkInput = Omit<Partial<BookMark>, "tags"> & {

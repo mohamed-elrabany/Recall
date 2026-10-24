@@ -34,7 +34,7 @@ function buildEmbeddingText(bookmark: BookMark): string {
     .join("\n");
 }
 
-async function generateEmbedding(text: string): Promise<number[]> {
+export async function generateEmbedding(text: string): Promise<number[]> {
   const { data, error } = await supabase.functions.invoke(
     "generate-embedding",
     { body: { text } },

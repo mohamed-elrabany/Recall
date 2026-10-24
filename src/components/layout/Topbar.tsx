@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useLocation } from "react-router";
+import { useState } from "react";
+import { useSemanticSearchContext } from "../../context/SemanticSearchContext";
 import { useLayout } from "../../hooks/useLayout";
 
 import { FaBookmark } from "react-icons/fa6";
@@ -9,17 +9,11 @@ import { MdGridOn, MdList } from "react-icons/md";
 import type { LayoutMode } from "../../types/settings";
 
 export default function Topbar() {
-    const location = useLocation();
 
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const { query, setQuery } = useSemanticSearchContext();
   const [inputFocused, setInputFocused] = useState<boolean>(false);
   const { layout, changeLayout } = useLayout();
 
-
-    useEffect(()=>{
-        setSearchQuery("");
-        setInputFocused(false);
-    }, [location.pathname]);
 
   return (
     <div className="sticky top-0 z-30 bg-background/90 backdrop-blur-md border-b border-border px-4 sm:px-6 py-3 flex items-center gap-3">
@@ -44,10 +38,10 @@ export default function Topbar() {
 
             <input
               type="text"
-              value={searchQuery}
+              value={query}
               onFocus={() => setInputFocused(true)}
               onBlur={() => setInputFocused(false)}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by topic, not just keywords..."
               className="flex-1 min-w-0 bg-transparent text-foreground outline-none placeholder:text-muted-foreground"
             />
