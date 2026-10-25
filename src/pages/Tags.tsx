@@ -1,35 +1,28 @@
 
 import TagButton from "../components/ui/TagButton";
-import Bookmark from "../components/ui/Bookmark";
-import { useSemanticSearchContext } from "../context/SemanticSearchContext";
+import BookmarkResults from "../components/layout/BookmarkResults";
+import { useBookmarkResults } from "../hooks/useBookmarkResults";
 import { useSearchParams } from "react-router";
 import { useAppSelector } from "../store/hooks";
 import { selectBookmarksByTag } from "../store/selectors/bookmarkSelectors";
 import { selectTagsWithFrequency } from "../store/selectors/tagSelector";
-import { useLayout } from "../hooks/useLayout";
 import type { Tag } from "../types/tag";
 
 export function Component() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { layout } = useLayout();
-  const { query, results, loading, error } = useSemanticSearchContext();
-
   const tagsWithFrequency = useAppSelector(selectTagsWithFrequency);
 
   const selectedTagId = searchParams.get("tagId");
 
   const activeTag =
-    tagsWithFrequency.find(
-      ({ tag }) => tag.id === selectedTagId,
-    )?.tag ?? null;
+    tagsWithFrequency.find(({ tag }) => tag.id === selectedTagId)?.tag ?? null;
 
   const bookmarks = useAppSelector((state) =>
     selectBookmarksByTag(state, activeTag),
   );
 
-  const displayedBookmarks = query.trim()
-    ? results.map((result) => result)
-    : bookmarks;
+  const { bookmarks: displayedBookmarks, isSearching, isLoading, searchError, isEmpty } = useBookmarkResults(bookmarks);
+
 
   const handleTagSelect = (tag: Tag) => {
     setSearchParams({ tagId: tag.id });
@@ -75,6 +68,7 @@ export function Component() {
           {tagsWithFrequency.map(({ tag, frequency }) => (
             <TagButton
               key={tag.id}
+              isActive={activeTag?.id === tag.id}
               label={tag.name}
               count={frequency}
               onClick={() => handleTagSelect(tag)}
@@ -89,37 +83,18 @@ export function Component() {
         )}
       </div>
 
-      {query.trim() && loading && (
-        <p className="text-sm text-muted-foreground">
-          Searching bookmarks...
-        </p>
-      )}
-
-      {query.trim() && error ? (
-        <p className="text-sm text-destructive">{error}</p>
-      ) : (
-        <>
-          <div
-            className={`grid gap-4 ${
-              layout === "grid"
-                ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-                : "grid-cols-1"
-            }`}
-          >
-            {displayedBookmarks.map((bookmark) => (
-              <Bookmark key={bookmark.id} bookmark={bookmark} />
-            ))}
-          </div>
-
-          {query.trim() &&
-            !loading &&
-            displayedBookmarks.length === 0 && (
-              <p className="text-sm text-muted-foreground">
-                No matching bookmarks found.
-              </p>
-            )}
-        </>
-      )}
+      <BookmarkResults
+        bookmarks={displayedBookmarks}
+        isLoading={isLoading}
+        error={searchError}
+        isEmpty={isEmpty}
+        emptyTitle={isSearching ? "No matching bookmarks found" : "No bookmarks yet"}
+        emptyDescription={
+          isSearching
+            ? "Try different keywords or describe what you're looking for."
+            : "Save your favorite links to Recall and organize them with tags."
+        }
+      />
     </div>
   );
 }

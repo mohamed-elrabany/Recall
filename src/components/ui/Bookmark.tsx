@@ -18,6 +18,7 @@ export default function Bookmark({ bookmark }: { bookmark: BookMark }) {
     bookmark.similarity != null
         ? Math.round(bookmark.similarity * 100)
         : null;
+  const context= bookmark?.snippet ? bookmark.snippet : bookmark?.notes ? bookmark.notes : "No summary yet";
 
   async function handleRetry(e: React.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation();
@@ -83,7 +84,7 @@ export default function Bookmark({ bookmark }: { bookmark: BookMark }) {
 
       </div>
       <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2 mb-3">
-        {bookmark?.snippet || "No summary yet"}
+        {context}
       </p>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1 flex-wrap">
@@ -95,6 +96,11 @@ export default function Bookmark({ bookmark }: { bookmark: BookMark }) {
               {tag.name}
             </span>
           ))}
+          {(bookmark?.tags?.length ?? 0) > 2 && (
+            <span className="text-[10px] bg-secondary/10 text-secondary px-2 py-1 font-medium rounded-full">
+              +{(bookmark?.tags?.length ?? 0) - 2}
+            </span>
+          )}
         </div>
         <div className="text-[10px] text-muted-foreground/60 flex items-center gap-1">
           <MdOutlineCalendarToday className="w-3 h-3" />

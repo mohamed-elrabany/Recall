@@ -3,7 +3,7 @@ import Row from "../ui/Row";
 import type { Profile } from "../../types/profile";
 import { useState, useRef } from "react";
 import { getInitials } from "../../utils/nameInitials";
-import { useAppDispatch } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { removeUserAvatar, userActions } from "../../store/slices/userSlice";
 
 import { IoIosArrowForward } from "react-icons/io";
@@ -12,6 +12,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 
 export default function Account({ user = null, setOpenModal, setAvatarUrl }: { user: Profile | null; setOpenModal: (open: boolean) => void; setAvatarUrl: (url: string) => void }) {
   const dispatch = useAppDispatch();
+  const bookmarks = useAppSelector((state) => state.bookmarks);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [openAvatarOptions, setOpenAvatarOptions] = useState<boolean>(false);
   const initials = getInitials(user?.full_name);
@@ -138,7 +139,7 @@ export default function Account({ user = null, setOpenModal, setAvatarUrl }: { u
           <p className="text-sm text-muted-foreground">
             {user?.email || "lolo@outlook.com"}
           </p>
-          <p className="text-xs text-secondary mt-0.5 font-medium">312 saves</p>
+          <p className="text-xs text-secondary mt-0.5 font-medium">{bookmarks.length} saves</p>
         </div>
       </div>
       <Row label="Full name">

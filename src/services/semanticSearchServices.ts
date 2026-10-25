@@ -4,7 +4,7 @@ import type { SearchParams } from "../types/semanticSearch";
 import { supabase } from "../lib/supabaseClient";
 import { generateEmbedding } from "./bookmarkServices";
 
-const DEFAULT_MIN_SIMILARITY = 0.75;
+const DEFAULT_MIN_SIMILARITY = 0.80;
 const DEFAULT_RESULT_LIMIT = 10;
 
 export async function searchBookmarks({
