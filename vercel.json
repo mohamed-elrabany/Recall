@@ -1,5 +1,15 @@
 {
   "rewrites": [
     { "source": "/(.*)", "destination": "/" }
+  ],
+  "headers": [
+    {
+      "source": "/(dashboard|favorites|tags|settings|login|register|verify-email)",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex" }]
+    },
+    {
+      "source": "/bookmarks/:path*",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex" }]
+    }
   ]
 }

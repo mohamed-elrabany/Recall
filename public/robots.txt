@@ -1,0 +1,5 @@
+
+User-agent: *
+Allow: /
+
+Sitemap: https://recall-seven-xi.vercel.app/sitemap.xml

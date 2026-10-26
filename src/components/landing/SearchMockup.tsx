@@ -163,7 +163,7 @@ export default function SearchMockup() {
 
           <div className="flex-1 mx-4 h-6 bg-background rounded-md flex items-center px-3">
             <span className="text-xs text-muted-foreground">
-              app.recall.so
+              recall.app
             </span>
           </div>
         </div>
