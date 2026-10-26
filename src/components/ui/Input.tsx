@@ -43,6 +43,7 @@ export default function Input({
     placeholder:text-muted-foreground placeholder:text-sm
     focus:border-primary
     focus:ring-3 focus:ring-primary/20
+    disabled:opacity-50 disabled:cursor-not-allowed
     outline-none
     transition-[border-color,box-shadow] duration-300 ease-in-out
   `;

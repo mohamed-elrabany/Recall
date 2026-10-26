@@ -38,7 +38,7 @@ export default function DeleteBookmark({
         <p className="max-w-md text-sm leading-6 text-muted-foreground">
           Are you sure you want to delete{" "}
           <span className="font-medium text-foreground">
-            "{bookmark.title || bookmark.url || "Untitled Bookmark"}"
+            "{bookmark?.title || bookmark?.url || "Untitled Bookmark"}"
           </span>
           ? This action cannot be undone.
         </p>

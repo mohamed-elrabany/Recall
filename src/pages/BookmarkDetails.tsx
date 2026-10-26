@@ -1,16 +1,23 @@
-import { bookmarks } from "../types/bookmark";
 import Bookmark from "../components/ui/Bookmark";
+import BookmarkSkeleton from "../components/ui/BookmarkSkeleton";
+import BookmarkDetailsSkeleton from "../components/ui/BookmarkDetailsSkeleton";
 import Button from "../components/ui/Button";
 import { useAppSelector, useAppDispatch } from "../store/hooks";
 import { useParams, useNavigate } from "react-router";
+import { useEffect, useState } from "react";
 
 import { RiGlobalLine } from "react-icons/ri";
 import { MdOutlineCalendarToday } from "react-icons/md";
 import { FiTag, FiEdit3 } from "react-icons/fi";
 import { IoSparkles } from "react-icons/io5";
 
-import { retryEmbedding } from "../services/bookmarkServices";
-import { getBookmarkStatusStyle, getStatusMessage, canRetry } from "../utils/bookmarkStatus";
+import { useSimilarBookmarks } from "../hooks/useSimilarBookmarks";
+import { retryEmbedding, getBookmarkById } from "../services/bookmarkServices";
+import {
+  getBookmarkStatusStyle,
+  getStatusMessage,
+  canRetry,
+} from "../utils/bookmarkStatus";
 import { selectBookmarkById } from "../store/selectors/bookmarkSelectors";
 import { bookmarkActions } from "../store/slices/bookmarkSlice";
 
@@ -22,22 +29,81 @@ export function Component() {
     bookmarkId ? selectBookmarkById(state, bookmarkId) : undefined,
   );
   const statusStyle = getBookmarkStatusStyle(bookmark?.status || "done");
-  const statusMessage = getStatusMessage(bookmark || { status: "done" } as any);
+  const statusMessage = getStatusMessage(
+    bookmark || ({ status: "done" } as any),
+  );
 
-  if (!bookmark) return null;
+  const { results: similarBookmarks, loading: similarBookmarksLoading } =
+    useSimilarBookmarks({
+      bookmarkId: bookmark?.id,
+    });
 
-async function handleRetry() {
-  if (!bookmark?.id) return;
-  try {
-    const processing = await retryEmbedding(bookmark.id, (final) =>
-      dispatch(bookmarkActions.updateBookmark(final)),
-    );
-    dispatch(bookmarkActions.updateBookmark(processing)); // banner shows "processing"
-  } catch (err) {
-    console.error(err); // e.g. already processing
+    const [bookmarkLoading, setBookmarkLoading] = useState(true);
+
+useEffect(() => {
+  if (!bookmarkId) {
+    setBookmarkLoading(false);
+    return;
   }
+
+  // Already available in Redux.
+  if (bookmark) {
+    setBookmarkLoading(false);
+    return;
+  }
+
+  let cancelled = false;
+
+  async function fetchBookmark() {
+    setBookmarkLoading(true);
+
+    try {
+      const fetchedBookmark = await getBookmarkById(bookmarkId!);
+
+      if (!cancelled && fetchedBookmark) {
+        dispatch(bookmarkActions.updateBookmark(fetchedBookmark));
+      }
+    } catch (err) {
+      console.error("Failed to fetch bookmark:", err);
+    } finally {
+      if (!cancelled) {
+        setBookmarkLoading(false);
+      }
+    }
+  }
+
+  void fetchBookmark();
+
+  return () => {
+    cancelled = true;
+  };
+}, [bookmarkId, bookmark, dispatch]);
+
+if (bookmarkLoading && !bookmark) {
+  return <BookmarkDetailsSkeleton />;
 }
 
+if (!bookmark) {
+  return (
+    <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <p className="text-sm text-muted-foreground">
+        Bookmark not found.
+      </p>
+    </section>
+  );
+}
+
+  async function handleRetry() {
+    if (!bookmark?.id) return;
+    try {
+      const processing = await retryEmbedding(bookmark.id, (final) =>
+        dispatch(bookmarkActions.updateBookmark(final)),
+      );
+      dispatch(bookmarkActions.updateBookmark(processing)); // banner shows "processing"
+    } catch (err) {
+      console.error(err); // e.g. already processing
+    }
+  }
 
   return (
     <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -174,7 +240,11 @@ async function handleRetry() {
             </div>
           </div>
         ) : (
-          <Button variant="primary" className="w-full">
+          <Button
+            variant="primary"
+            className="w-full"
+            onClick={() => navigate(`/bookmarks/edit/${bookmark.id}`)}
+          >
             <FiEdit3 size={14} />
             Add a note to this save
           </Button>
@@ -198,9 +268,21 @@ async function handleRetry() {
         </div>
 
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {bookmarks.slice(0, 2).map((relatedBookmark) => (
-            <Bookmark key={relatedBookmark.id} bookmark={relatedBookmark} />
-          ))}
+          {similarBookmarksLoading ? (
+            Array.from({ length: 2 }).map((_, i) => (
+              <BookmarkSkeleton key={i} />
+            ))
+          ) : similarBookmarks.length > 0 ? (
+            similarBookmarks
+              .slice(0, 2)
+              .map((relatedBookmark) => (
+                <Bookmark key={relatedBookmark.id} bookmark={relatedBookmark} />
+              ))
+          ) : (
+            <p className="col-span-full text-sm text-gray-500">
+              No similar bookmarks found.
+            </p>
+          )}
         </div>
       </div>
     </section>

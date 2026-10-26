@@ -230,7 +230,7 @@ export default function EditBookmarkForm({
               icon={MdLink}
               name="url"
               placeholder="https://..."
-              autoFocus
+              disabled
               value={url}
               onChange={(e) => setUrl(e.target.value)}
             />
@@ -303,6 +303,7 @@ export default function EditBookmarkForm({
               name="title"
               placeholder="Article or page title"
               value={title}
+              autoFocus
               onChange={(e) => setTitle(e.target.value)}
             />
 

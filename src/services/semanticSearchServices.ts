@@ -1,4 +1,3 @@
-
 import type { BookMark } from "../types/bookmark";
 import type { SearchParams } from "../types/semanticSearch";
 import { supabase } from "../lib/supabaseClient";
@@ -29,6 +28,36 @@ export async function searchBookmarks({
 
     if (error) {
         console.error("Error searching bookmarks:", error);
+        throw error;
+    }
+
+    return (data ?? []) as BookMark[];
+}
+
+
+
+interface SimilarBookmarkParams {
+    bookmarkId: string;
+    minSimilarity?: number;
+    limit?: number;
+}
+
+export async function getSimilarBookmarks({
+    bookmarkId,
+    minSimilarity = DEFAULT_MIN_SIMILARITY,
+    limit = 2,
+}: SimilarBookmarkParams): Promise<BookMark[]> {
+    const { data, error } = await supabase.rpc(
+        "get_similar_bookmarks",
+        {
+            p_bookmark_id: bookmarkId,
+            p_min_similarity: minSimilarity,
+            p_limit: limit,
+        }
+    );
+
+    if (error) {
+        console.error("Error fetching similar bookmarks:", error);
         throw error;
     }
 

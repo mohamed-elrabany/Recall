@@ -172,11 +172,12 @@ export async function fetchBookmarks(): Promise<BookMark[]> {
   }) as BookMark[];
 }
 
-export async function getBookmarkById(id: string): Promise<BookMark | null> {
+export async function getBookmarkById(
+  id: string,
+): Promise<BookMark | null> {
   const { data, error } = await supabase
     .from("bookmarks")
-    .select(
-      `
+    .select(`
       *,
       tags:bookmark_tags (
         tag:tags (
@@ -186,16 +187,14 @@ export async function getBookmarkById(id: string): Promise<BookMark | null> {
           created_at
         )
       )
-    `,
-    )
+    `)
     .eq("id", id)
-    .single();
+    .maybeSingle();
 
   if (error) throw new Error(error.message);
+  if (!data) return null;
 
   const relations = (data.tags ?? []) as unknown as BookmarkTagRelation[];
-
-  console.log("Fetched bookmark by ID:", data);
 
   return {
     ...data,

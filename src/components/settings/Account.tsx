@@ -6,7 +6,7 @@ import { getInitials } from "../../utils/nameInitials";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { removeUserAvatar, userActions } from "../../store/slices/userSlice";
 
-import { IoIosArrowForward } from "react-icons/io";
+// import { IoIosArrowForward } from "react-icons/io";
 import { MdOutlineCameraAlt } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
 
@@ -152,12 +152,12 @@ export default function Account({ user = null, setOpenModal, setAvatarUrl }: { u
           {user?.email || "lolo@outlook.com"}
         </p>
       </Row>
-      <Row label="Change password">
+      {/* <Row label="Change password">
         <button className="text-primary flex items-center gap-2 text-sm font-semibold hover:underline transition-all duration-150 ease-in-out cursor-pointer">
           Update password
           <IoIosArrowForward />
         </button>
-      </Row>
+      </Row> */}
     </Section>
   );
 }
