@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import type { Location } from "react-router";
 
 import { useAppSelector } from "../store/hooks";
+import { useRouteTitle } from "../hooks/useRouteTitle";
 import { SemanticSearchProvider } from "../context/SemanticSearchContext";
 import lazyPage from "../utils/lazyPage";
 
@@ -27,6 +28,7 @@ const SettingsPage = lazyPage(() => import("../pages/Settings"));
 const BookmarkDetailsPage = lazyPage(() => import("../pages/BookmarkDetails"));
 
 export default function ProtectedRoutes() {
+  useRouteTitle();
   const { isLoading, isAuthenticated } = useAppSelector((state) => state.auth);
 
   const location = useLocation();

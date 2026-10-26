@@ -17,10 +17,35 @@ const router = createBrowserRouter([
           {
             element: <RootLayout />,
             children: [
-              { index: true, lazy: () => import("../pages/Landing"), handle: { chrome: "landing" } },
-              { path: "login", lazy: () => import("../pages/Login"), handle: { chrome: "auth" } },
-              { path: "register", lazy: () => import("../pages/Register"), handle: { chrome: "auth" } },
-              { path: "verify-email", lazy: () => import("../pages/VerifyEmail"), handle: { chrome: "auth" } },
+              {
+                index: true,
+                lazy: () => import("../pages/Landing"),
+                handle: {
+                  chrome: "landing",
+                  documentTitle: "Recall — Save Links, Find Them by Meaning",
+                },
+              },
+              {
+                path: "login",
+                lazy: () => import("../pages/Login"),
+                handle: { chrome: "auth", documentTitle: "Log in — Recall" },
+              },
+              {
+                path: "register",
+                lazy: () => import("../pages/Register"),
+                handle: {
+                  chrome: "auth",
+                  documentTitle: "Create account — Recall",
+                },
+              },
+              {
+                path: "verify-email",
+                lazy: () => import("../pages/VerifyEmail"),
+                handle: {
+                  chrome: "auth",
+                  documentTitle: "Verify your email — Recall",
+                },
+              },
             ],
           },
         ],
@@ -28,23 +53,66 @@ const router = createBrowserRouter([
       {
         element: <ProtectedRoutes />,
         children: [
-          { path: "dashboard", lazy: () => import("../pages/Dashboard"), handle: { topbar: "default" } },
-          { path: "favorites", lazy: () => import("../pages/Favorites"), handle: { topbar: "default" } },
-          { path: "tags", lazy: () => import("../pages/Tags"), handle: { topbar: "default" } },
-          { path: "settings", lazy: () => import("../pages/Settings"), handle: { topbar: "back", title: "Settings" } },
+          {
+            path: "dashboard",
+            lazy: () => import("../pages/Dashboard"),
+            handle: { topbar: "default", documentTitle: "Dashboard — Recall" },
+          },
+          {
+            path: "favorites",
+            lazy: () => import("../pages/Favorites"),
+            handle: { topbar: "default", documentTitle: "Favorites — Recall" },
+          },
+          {
+            path: "tags",
+            lazy: () => import("../pages/Tags"),
+            handle: { topbar: "default", documentTitle: "Tags — Recall" },
+          },
+          {
+            path: "settings",
+            lazy: () => import("../pages/Settings"),
+            handle: {
+              topbar: "back",
+              title: "Settings",
+              documentTitle: "Settings — Recall",
+            },
+          },
           {
             path: "bookmarks",
             children: [
-              { path: "add", lazy: () => import("../pages/AddBookmark"), handle: { topbar: "none" } },
-              { path: "edit/:bookmarkId", lazy: () => import("../pages/EditBookmark"), handle: { topbar: "none" } },
-              { path: ":bookmarkId", lazy: () => import("../pages/BookmarkDetails"), handle: { topbar: "bookmark" } },
+              {
+                path: "add",
+                lazy: () => import("../pages/AddBookmark"),
+                handle: {
+                  topbar: "none",
+                  documentTitle: "Add Bookmark — Recall",
+                },
+              },
+              {
+                path: "edit/:bookmarkId",
+                lazy: () => import("../pages/EditBookmark"),
+                handle: {
+                  topbar: "none",
+                  documentTitle: "Edit Bookmark — Recall",
+                },
+              },
+              {
+                path: ":bookmarkId",
+                lazy: () => import("../pages/BookmarkDetails"),
+                handle: {
+                  topbar: "bookmark",
+                  documentTitle: "Bookmark Details — Recall",
+                },
+              },
             ],
           },
         ],
       },
-      // Unknown URLs. useRouteError() returns undefined here, which my
-      // ErrorPage already treats as a 404.
-      { path: "*", Component: ErrorPage },
+      {
+        path: "*",
+        Component: ErrorPage,
+        handle: { documentTitle: "Page not found — Recall" },
+      },
     ],
   },
 ]);

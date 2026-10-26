@@ -11,12 +11,12 @@ export default function RootLayout() {
   const isLanding = handle?.chrome === "landing";
 
   return (
-    <main className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen">
       {isLanding ? <Navbar /> : <BackNav />}
-      <div className="flex-grow">
+      <main className="flex-grow">
         <Outlet />
-      </div>
+      </main>
       {isLanding && <Footer />}
-    </main>
+    </div>
   );
 }

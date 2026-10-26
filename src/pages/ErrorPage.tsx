@@ -1,4 +1,5 @@
 import { isRouteErrorResponse, Link, useRouteError } from "react-router";
+import { useEffect } from "react";
 import { LuInfo } from "react-icons/lu";
 import Logo from "../components/ui/Logo";
 
@@ -16,6 +17,21 @@ export default function ErrorPage() {
 
   const details =
     import.meta.env.DEV && error instanceof Error ? error.message : null;
+
+  useEffect(() => {
+    const previousTitle = document.title;
+    document.title = `${title} — Recall`;
+
+    const meta = document.createElement("meta");
+    meta.name = "robots";
+    meta.content = "noindex";
+    document.head.appendChild(meta);
+
+    return () => {
+      document.title = previousTitle;
+      meta.remove();
+    };
+  }, [title]);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-8 bg-background px-6 text-center">
