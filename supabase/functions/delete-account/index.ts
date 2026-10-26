@@ -50,17 +50,32 @@ Deno.serve(async (req: Request) => {
     }
 
     // Admin privileges stay on the server, never in the frontend.
-    const supabaseAdmin = createClient(
-      supabaseUrl,
-      serviceRoleKey,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false,
-        },
+    const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
       },
-    );
+    });
 
+    // Remove the user's avatar files from Storage first.
+    // Adjust "avatars" and the path to match how AdjustAvatar uploads files.
+    const { data: files, error: listError } = await supabaseAdmin.storage
+      .from("avatars")
+      .list(user.id);
+
+    if (listError) {
+      console.error("Failed to list avatar files:", listError.message);
+    } else if (files?.length) {
+      const { error: removeError } = await supabaseAdmin.storage
+        .from("avatars")
+        .remove(files.map((f) => `${user.id}/${f.name}`));
+
+      if (removeError) {
+        console.error("Failed to remove avatar files:", removeError.message);
+      }
+    }
+
+    // Deleting the auth user cascades to profiles and other user tables.
     const { error: deleteError } =
       await supabaseAdmin.auth.admin.deleteUser(user.id);
 
