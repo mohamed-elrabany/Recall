@@ -4,7 +4,7 @@ import { supabase } from "../lib/supabaseClient";
 import { generateEmbedding } from "./bookmarkServices";
 
 const DEFAULT_MIN_SIMILARITY = 0.80;
-const DEFAULT_RESULT_LIMIT = 10;
+const DEFAULT_RESULT_LIMIT = 2;
 
 export async function searchBookmarks({
     query,
@@ -45,7 +45,7 @@ interface SimilarBookmarkParams {
 export async function getSimilarBookmarks({
     bookmarkId,
     minSimilarity = DEFAULT_MIN_SIMILARITY,
-    limit = 2,
+    limit = DEFAULT_RESULT_LIMIT,
 }: SimilarBookmarkParams): Promise<BookMark[]> {
     const { data, error } = await supabase.rpc(
         "get_similar_bookmarks",
