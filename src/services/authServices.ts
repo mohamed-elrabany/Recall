@@ -62,11 +62,10 @@ export async function logout() {
   }
 }
 
-export async function deleteAccount({ userId }: { userId: string }) {
-  const { error } = await supabase.auth.admin.deleteUser(userId);
-  if (error) {
-    throw error;
-  }
+export async function deleteAccount() {
+  const { error } = await supabase.functions.invoke("delete-account");
+
+  if (error) throw error;
 }
 
 export async function resendConfirmation({ email }: { email: string }) {

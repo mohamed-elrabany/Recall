@@ -1,17 +1,20 @@
+
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { Session } from "@supabase/supabase-js";
 
 interface AuthState {
-    session: Session | null;
-    isAuthenticated: boolean;
-    isLoading: boolean;
+  session: Session | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  isSubmitting: boolean;
 }
 
-const initialState: AuthState ={
-    session: null,
-    isAuthenticated: false,
-    isLoading: true,
+const initialState: AuthState = {
+  session: null,
+  isAuthenticated: false,
+  isLoading: true,
+  isSubmitting: false,
 };
 
 const authSlice = createSlice({
@@ -27,14 +30,18 @@ const authSlice = createSlice({
       state.isLoading = action.payload;
     },
 
+    setSubmitting(state, action: PayloadAction<boolean>) {
+      state.isSubmitting = action.payload;
+    },
+
     logout(state) {
       state.session = null;
       state.isAuthenticated = false;
       state.isLoading = false;
+      state.isSubmitting = false;
     },
   },
 });
 
-export const authActions= authSlice.actions;
-const authReducer= authSlice.reducer;
-export default authReducer;
+export const authActions = authSlice.actions;
+export default authSlice.reducer;

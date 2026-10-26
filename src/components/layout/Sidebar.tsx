@@ -4,7 +4,6 @@ import { navItems } from "../../utils/navItems";
 import { getInitials } from "../../utils/nameInitials";
 
 import { MdAdd } from "react-icons/md";
-import { PiSignOutBold } from "react-icons/pi";
 
 import Logo from "../ui/Logo";
 import Button from "../ui/Button";
@@ -56,7 +55,7 @@ export default function Sidebar() {
       </div>
       <div className="w-full flex flex-col items-stretch gap-2 border-t border-border pt-2">
         <div className="flex items-center gap-2 px-2 py-3">
-          <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+          <div onClick={() => navigate("/settings")} className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
             {user?.avatar_url ? (
             <img
               src={user.avatar_url}
@@ -84,13 +83,6 @@ export default function Sidebar() {
             </span>
           </div>
         </div>
-        <Button
-          variant="secondary"
-          className="w-full flex items-center justify-center gap-2 hover:text-red-500"
-        >
-          <PiSignOutBold className="w-5 h-5" />
-          Sign out
-        </Button>
       </div>
     </aside>
   );

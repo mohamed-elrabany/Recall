@@ -1,66 +1,73 @@
+
+import { useNavigate } from "react-router";
 import { supabase } from "../lib/supabaseClient";
-import { useEffect } from "react";
-import { useAppDispatch } from "../store/hooks";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { authActions } from "../store/slices/authSlice";
 import { userActions } from "../store/slices/userSlice";
-import { getCurrentUser } from "../services/userServices";
-import {useAppSelector} from "../store/hooks";
+import {
+  logout as logoutService,
+  deleteAccount as deleteAccountService,
+} from "../services/authServices";
 
 export function useAuth() {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
+
   const user = useAppSelector((state) => state.user.user);
+  const isLoading = useAppSelector((state) => state.auth.isLoading);
+  const isSubmitting = useAppSelector((state) => state.auth.isSubmitting);
 
-  useEffect(() => {
-  console.log("userSlice Data:", user);
-}, [user]);
+  async function handleLogout() {
+    if (isSubmitting) return;
 
-  useEffect(() => {
-    const initializeAuth = async () => {
-      const { data, error } = await supabase.auth.getSession();
+    dispatch(authActions.setSubmitting(true));
 
-      if (error) {
-        console.error("Error getting session:", error);
-        dispatch(authActions.setLoading(false));
-        return;
-      }
+    try {
+      await logoutService();
 
-      dispatch(authActions.setSession(data.session));
+      dispatch(authActions.logout());
+      dispatch(userActions.setUser(null));
 
-      // Load profile if user is logged in
-      if (data.session) {
-        try {
-          const profile = await getCurrentUser();
-          console.log("User profile loaded:", profile);
-          dispatch(userActions.setUser(profile));
-        } catch (error) {
-          console.error("Error getting user profile:", error);
-        }
-      }
+      navigate("/login", { replace: true });
+    } catch (error) {
+      console.error("Error logging out:", error);
+      throw error;
+    } finally {
+      dispatch(authActions.setSubmitting(false));
+    }
+  }
 
-      dispatch(authActions.setLoading(false));
-    };
+  async function handleDeleteAccount() {
+    if (isSubmitting) return;
 
-    initializeAuth();
+    if (!user?.id) {
+      throw new Error("No authenticated user found.");
+    }
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      dispatch(authActions.setSession(session));
+    dispatch(authActions.setSubmitting(true));
 
-      if (session) {
-        try {
-          const profile = await getCurrentUser();
-          dispatch(userActions.setUser(profile));
-        } catch (error) {
-          console.error("Error getting user profile:", error);
-        }
-      } else {
-        dispatch(userActions.setUser(null));
-      }
-    });
+    try {
+      await deleteAccountService();
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [dispatch]);
+      // Clear the local Supabase session after successful deletion.
+      await supabase.auth.signOut({ scope: "local" });
+
+      dispatch(authActions.logout());
+      dispatch(userActions.setUser(null));
+
+      navigate("/", { replace: true });
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      throw error;
+    } finally {
+      dispatch(authActions.setSubmitting(false));
+    }
+  }
+
+  return {
+    handleLogout,
+    handleDeleteAccount,
+    isLoading,
+    isSubmitting,
+  };
 }

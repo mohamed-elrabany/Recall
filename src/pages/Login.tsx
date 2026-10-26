@@ -63,38 +63,29 @@ export function Component() {
               onChange={(e) => setEmail(e.target.value)}
             />
 
-            <div className="w-full flex flex-col items-stretch gap-1">
-              <Input
-                id="password"
-                name="password"
-                label="Password"
-                type="password"
-                placeholder="Your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onBlur={() =>
-                  setTouchedInputs({ ...touchedInputs, password: true })
-                }
-                errorMessage={
-                  touchedInputs.password && password.length < 8
-                    ? "Password must be at least 8 characters"
-                    : ""
-                }
-              />
-
-              <button
-                type="button"
-                className="self-end w-fit text-sm text-primary font-semibold cursor-pointer transition-colors duration-300 ease-in-out hover:underline"
-              >
-                Forgot password?
-              </button>
-            </div>
+            <Input
+              id="password"
+              name="password"
+              label="Password"
+              type="password"
+              placeholder="Your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onBlur={() =>
+                setTouchedInputs({ ...touchedInputs, password: true })
+              }
+              errorMessage={
+                touchedInputs.password && password.length < 8
+                  ? "Password must be at least 8 characters"
+                  : ""
+              }
+            />
 
             <Button
               disabled={!isFormValid || isSubmitting}
               variant="primary"
               type="submit"
-              className={`w-full ${(!isFormValid || isSubmitting) ? "opacity-50 cursor-not-allowed hover:brightness-100" : "cursor-pointer"}`}
+              className={`w-full ${!isFormValid || isSubmitting ? "opacity-50 cursor-not-allowed hover:brightness-100" : "cursor-pointer"}`}
             >
               <AnimatePresence>
                 {isSubmitting ? <p>Signing in</p> : <p>Sign in</p>}
