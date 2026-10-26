@@ -17,8 +17,6 @@ import { CgSpinner } from "react-icons/cg";
 import { MdAdd, MdLink, MdErrorOutline } from "react-icons/md";
 import {
   LuFileText,
-  LuLoaderCircle,
-  LuCheck,
   LuAlignLeft,
   LuInfo,
 } from "react-icons/lu";
@@ -53,22 +51,23 @@ export default function EditBookmarkForm({
   const hasNotes = Boolean(notes?.trim());
   const hasContext = hasSnippet || hasNotes;
 
-  const isLoading = false;
-  const fetched = false;
-  const previewTitle = "Example Website";
-  const previewDomain = "example.com";
 
-  const initialTagNames = getTagNames(initial.tags);
-  const sameTags =
-    tags.length === initialTagNames.length &&
-    tags.every((tag) => initialTagNames.includes(tag));
+const initialTagNames = getTagNames(initial.tags);
 
-  const isUpdated =
-    url !== initial.url ||
-    title !== initial.title ||
-    snippet !== initial.snippet ||
-    notes !== initial.notes ||
-    !sameTags;
+const normalize = (value: string | null | undefined) =>
+  (value ?? "").trim();
+
+const sameTags =
+  tags.length === initialTagNames.length &&
+  [...tags].sort().every((tag, index) => tag === [...initialTagNames].sort()[index]);
+
+const isUpdated =
+  normalize(url) !== normalize(initial.url) ||
+  normalize(title) !== normalize(initial.title) ||
+  normalize(snippet) !== normalize(initial.snippet) ||
+  normalize(notes) !== normalize(initial.notes) ||
+  !sameTags;
+
 
   useEffect(() => {
     if (bookmark.status === "processing") {
@@ -234,67 +233,6 @@ export default function EditBookmarkForm({
               value={url}
               onChange={(e) => setUrl(e.target.value)}
             />
-
-            <AnimatePresence initial={false}>
-              {(isLoading || fetched) && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="
-                    mb-4 p-3 rounded-xl
-                    bg-muted border border-border/60
-                    flex items-center gap-3
-                  "
-                >
-                  {isLoading ? (
-                    <>
-                      <LuLoaderCircle
-                        size={16}
-                        className="
-                          text-primary
-                          animate-spin
-                          flex-shrink-0
-                        "
-                      />
-
-                      <span className="text-sm text-muted-foreground">
-                        Fetching page info…
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <LuCheck
-                        size={16}
-                        className="
-                          text-secondary
-                          flex-shrink-0
-                        "
-                      />
-
-                      <div className="min-w-0">
-                        <p
-                          className="
-                            text-sm font-semibold
-                            text-foreground truncate
-                          "
-                          style={{
-                            fontFamily: "Manrope, sans-serif",
-                          }}
-                        >
-                          {previewTitle}
-                        </p>
-
-                        <p className="text-xs text-muted-foreground">
-                          {previewDomain}
-                        </p>
-                      </div>
-                    </>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
 
             <Input
               id="title"

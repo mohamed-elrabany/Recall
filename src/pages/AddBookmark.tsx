@@ -18,7 +18,7 @@ import Button from "../components/ui/Button";
 import { IoClose } from "react-icons/io5";
 import { CgSpinner } from "react-icons/cg";
 import { MdAdd, MdLink } from "react-icons/md";
-import { LuFileText, LuLoaderCircle, LuCheck } from "react-icons/lu";
+import { LuFileText } from "react-icons/lu";
 
 
 export function Component() {
@@ -36,10 +36,6 @@ export function Component() {
 
   const [url, setUrl] = useState("");
   const [notes, setNotes] = useState("");
-  const isLoading: boolean = false;
-  const fetched: boolean = false;
-  const previewTitle: string = "Example Website";
-  const previewDomain: string = "example.com";
 
   const isFormValid: boolean = url.trim() !== "";
 
@@ -129,51 +125,6 @@ export function Component() {
             {actionData?.error && (
               <p className="text-sm text-red-500">{actionData.error}</p>
             )}
-
-            <AnimatePresence initial={false}>
-              {(isLoading || fetched) && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="mb-4 p-3 rounded-xl bg-muted border border-border/60 flex items-center gap-3"
-                >
-                  {isLoading ? (
-                    <>
-                      <LuLoaderCircle
-                        size={16}
-                        className="text-primary animate-spin flex-shrink-0"
-                      />
-
-                      <span className="text-sm text-muted-foreground">
-                        Fetching page info…
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <LuCheck
-                        size={16}
-                        className="text-secondary flex-shrink-0"
-                      />
-
-                      <div className="min-w-0">
-                        <p
-                          className="text-sm font-semibold text-foreground truncate"
-                          style={{ fontFamily: "Manrope, sans-serif" }}
-                        >
-                          {previewTitle}
-                        </p>
-
-                        <p className="text-xs text-muted-foreground">
-                          {previewDomain}
-                        </p>
-                      </div>
-                    </>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
 
             <Input
               id="notes"
