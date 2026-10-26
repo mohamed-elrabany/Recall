@@ -1,6 +1,5 @@
 import Appearance from "../components/settings/Apperance";
 import Account from "../components/settings/Account";
-import Data from "../components/settings/Data";
 import DangerZone from "../components/settings/DangerZone";
 import AdjustAvatar from "../components/modals/AdjustAvatar";
 
@@ -29,7 +28,6 @@ export function Component() {
         toggleTheme={changeTheme}
       />
 
-      <Data />
       <DangerZone />
 
       <AdjustAvatar

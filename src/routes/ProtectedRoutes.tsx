@@ -18,6 +18,7 @@ import Sidebar from "../components/layout/Sidebar";
 import BottomNav from "../components/layout/BottomNav";
 import BackNav from "../components/layout/BackNav";
 import BookmarkDetailsNav from "../components/layout/BookmarkDetailsNav";
+import LoadingPage from "../pages/LoadingPage";
 
 const DashboardPage = lazyPage(() => import("../pages/Dashboard"));
 const FavoritesPage = lazyPage(() => import("../pages/Favorites"));
@@ -58,7 +59,7 @@ export default function ProtectedRoutes() {
   }, [backgroundLocation]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <LoadingPage />;
   }
 
   if (!isAuthenticated) {

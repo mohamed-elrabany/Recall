@@ -1,13 +1,13 @@
-// PublicRoutes.tsx
 import { Navigate, Outlet } from "react-router";
 import { useAppSelector } from "../store/hooks";
+import LoadingPage from "../pages/LoadingPage";
 
 export default function PublicRoutes() {
 
   const { isLoading, isAuthenticated } = useAppSelector((state) => state.auth);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <LoadingPage />;
   }
 
   if (isAuthenticated) {
